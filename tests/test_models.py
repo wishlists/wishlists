@@ -132,7 +132,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(str(item), 'laptop: product_id: 1, item_id: None, wishlist_id: 1')
 
     def test_wishlist_str(self):
-        """ Test Item __str__ method"""
+        """ Test Wishlist __str__ method"""
         item = Item(product_name='laptop', product_id=1, wishlist_id=1)
         wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
         self.assertEqual(str(wishlist_obj), 'electronics: id: None, user_id: 123, items: [<Item \'laptop\' id=[None] '
