@@ -139,7 +139,7 @@ class Wishlist(db.Model):
         db.create_all()  # make our sqlalchemy tables
 
     def serialize(self):
-        """ Serializes a Pet into a dictionary """
+        """ Serializes a Wishlist into a dictionary """
         wishlist = {
             "id": self.id,
             "name": self.name,
@@ -154,13 +154,13 @@ class Wishlist(db.Model):
 
     def deserialize(self, data: dict):
         """
-        Deserializes a Pet from a dictionary
+        Deserializes a Wishlist from a dictionary
 
         :param data: a dictionary of attributes
         :type data: dict
 
         :return: a reference to self
-        :rtype: Pet
+        :rtype: Wishlist
 
         """
         try:
@@ -176,6 +176,6 @@ class Wishlist(db.Model):
                                       error.args[0])
         except TypeError:
             raise DataValidationError(
-                "Invalid pet: body of request contained bad or no data"
+                "Invalid Wishlist: body of request contained bad or no data"
             )
         return self
