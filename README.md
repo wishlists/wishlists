@@ -46,5 +46,5 @@ You can also manually run `nosetests` with `coverage` (but `setup.cfg` does this
 ## Checking pep8 compliance
 
 ```shell
-    $ flake8 --count --max-complexity=10 --statistics model,service
+    $ flake8 --count --max-complexity=10 --statistics model, service
 ```
