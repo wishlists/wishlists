@@ -39,12 +39,43 @@ from service.models import Wishlist, DataValidationError
 # Import Flask application
 from . import app
 
+
+
 ######################################################################
-# GET INDEX
+# RETRIEVE A WISHLIST
 ######################################################################
-@app.route("/wishlists", methods=["GET"])
-def list_wishlists():
-    return 'Wishlist Home Page';
+@app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
+def get_wishlists(wishlist_id):
+    """
+    Retrieve a single Wishlist
+    This endpoint will return a Wishlist based on it's id
+    """
+    app.logger.info("Request for wishlist with id: %s", wishlist_id)
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
+
+
+######################################################################
+# ADD A NEW WISHLIST
+######################################################################
+@app.route("/wishlists", methods=["POST"])
+def creat_wishlists():
+    """
+    Creates a Wishlist
+    This endpoint will create a Wishlist based the data in the body that is posted
+    """
+    app.logger.info("Request to create a wishlist")
+    check_content_type("application/json")
+    wishlist = Wishlist()
+    wishlist.deserialize(request.get_json())
+    wishlist.create()
+    message = wishlist.serialize()
+    location_url = url_for("get_wishlists", wishlist_id=wishlist.id, _external=True)
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
 
 
 ######################################################################
@@ -60,5 +91,5 @@ def check_content_type(content_type):
     """ Checks that the media type is correct """
     if request.headers["Content-Type"] == content_type:
         return
-    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+    # app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
     abort(415, "Content-Type must be {}".format(content_type))
