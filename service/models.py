@@ -27,10 +27,7 @@ Attributes:
 
 """
 import logging
-from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
-import json
-
 
 logger = logging.getLogger("flask.app")
 
@@ -52,7 +49,8 @@ class Item(db.Model):
     # Table Schema
     ##################################################
     id = db.Column(db.Integer, primary_key=True)
-    wishlist_id = db.Column(db.Integer, db.ForeignKey('wishlist.id'), nullable=False)
+    wishlist_id = db.Column(db.Integer, db.ForeignKey('wishlist.id'),
+                            nullable=False)
     product_id = db.Column(db.Integer, nullable=False)
     product_name = db.Column(db.String(63), nullable=False)
 
@@ -67,7 +65,8 @@ class Item(db.Model):
         db.create_all()  # make our sqlalchemy tables
 
     def __repr__(self):
-        return "<Item %r id=[%s] wishlist_id[%s] product_id[%s]>" % (self.product_name, self.id, self.wishlist_id, self.product_id)
+        return "<Item %r id=[%s] wishlist_id[%s] product_id[%s]>" % \
+               (self.product_name, self.id, self.wishlist_id, self.product_id)
 
     def __str__(self):
         return "%s: product_id: %s, item_id: %s, wishlist_id: %s" % (
@@ -113,7 +112,8 @@ class Wishlist(db.Model):
     app = None
 
     def __repr__(self):
-        return "<Wishlist %r user_id=[%s] items[%s]>" % (self.name, self.user_id, self.items)
+        return "<Wishlist %r user_id=[%s] items[%s]>" % \
+               (self.name, self.user_id, self.items)
 
     def __str__(self):
         return "%s: id: %s, user_id: %s, items: %s" % (
@@ -172,7 +172,8 @@ class Wishlist(db.Model):
                 item.deserialize(json_item)
                 self.items.append(item)
         except KeyError as error:
-            raise DataValidationError("Invalid Wishlist: missing " + error.args[0])
+            raise DataValidationError("Invalid Wishlist: missing " +
+                                      error.args[0])
         except TypeError:
             raise DataValidationError(
                 "Invalid pet: body of request contained bad or no data"
