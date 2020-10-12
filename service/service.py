@@ -24,22 +24,16 @@ PUT /wishlists/{id} - updates a wishlist record in the database
 DELETE /wishlists/{id} - deletes a wishlist record in the database
 """
 
-import os
-import sys
-import logging
-from flask import Flask, jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
 from werkzeug.exceptions import NotFound
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
-from flask_sqlalchemy import SQLAlchemy
-from service.models import Wishlist, DataValidationError
+from service.models import Wishlist
 
 # Import Flask application
 from . import app
-
-
 
 ######################################################################
 # RETRIEVE A WISHLIST
@@ -53,7 +47,7 @@ def get_wishlists(wishlist_id):
     app.logger.info("Request for wishlist with id: %s", wishlist_id)
     wishlist = Wishlist.find(wishlist_id)
     if not wishlist:
-        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+        raise NotFound("Wishlist '{}' was not found.".format(wishlist_id))
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
 
@@ -61,10 +55,10 @@ def get_wishlists(wishlist_id):
 # ADD A NEW WISHLIST
 ######################################################################
 @app.route("/wishlists", methods=["POST"])
-def creat_wishlists():
+def create_wishlists():
     """
     Creates a Wishlist
-    This endpoint will create a Wishlist based the data in the body that is posted
+    This endpoint will create a Wishlist based the data in the posted body
     """
     app.logger.info("Request to create a wishlist")
     check_content_type("application/json")
@@ -72,7 +66,8 @@ def creat_wishlists():
     wishlist.deserialize(request.get_json())
     wishlist.create()
     message = wishlist.serialize()
-    location_url = url_for("get_wishlists", wishlist_id=wishlist.id, _external=True)
+    location_url = url_for("get_wishlists",
+                           wishlist_id=wishlist.id, _external=True)
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
@@ -91,5 +86,4 @@ def check_content_type(content_type):
     """ Checks that the media type is correct """
     if request.headers["Content-Type"] == content_type:
         return
-    # app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
     abort(415, "Content-Type must be {}".format(content_type))
