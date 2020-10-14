@@ -31,6 +31,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
 
+
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
@@ -179,3 +180,21 @@ class Wishlist(db.Model):
                 "Invalid Wishlist: body of request contained bad or no data"
             )
         return self
+
+    def create(self):
+        """
+        Creates a Wishlist to the data store
+        """
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def find(cls, wishlist_id: int):
+        """Finds a Wishlist by it's ID
+        :param wishlist_id: the id of the Wishlist to find
+        :type wishlist_id: int
+        :return: an instance with the wishlist_id, or None if not found
+        :rtype: Wishlist
+        """
+        cls.logger.info("Processing lookup for id %s ...", wishlist_id)
+        return cls.query.get(wishlist_id)
