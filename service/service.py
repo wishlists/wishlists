@@ -30,7 +30,7 @@ from werkzeug.exceptions import NotFound
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
-from service.models import Wishlist
+from service.models import Wishlist, DataValidationError
 
 # Import Flask application
 from . import app
