@@ -31,7 +31,6 @@ from service.models import db, Wishlist
 from service.service import app, init_db
 from .wishlist_factory import WishlistFactory
 
-# DATABASE_URI = os.getenv('DATABASE_URI', 'sqlite:///../db/test.db')
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
 )

@@ -45,9 +45,7 @@ def get_wishlists(wishlist_id):
     This endpoint will return a Wishlist based on it's id
     """
     app.logger.info("Request for wishlist with id: %s", wishlist_id)
-    wishlist = Wishlist.find(wishlist_id)
-    if not wishlist:
-        raise NotFound("Wishlist '{}' was not found.".format(wishlist_id))
+    wishlist = Wishlist.find_or_404(wishlist_id)
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
 
@@ -71,6 +69,30 @@ def create_wishlists():
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
+
+######################################################################
+# ADD ITEMS TO AN EXISTING WISHLIST
+######################################################################
+# @app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
+# def add_items_to_wishlist(wishlist_id):
+#     """
+#     Adds items to a Wishlist
+#     This endpoint will add items to the Wishlist (id in path param) based the data in the posted body
+#     """
+#     app.logger.info("Request to add items to a wishlist")
+#     check_content_type("application/json")
+#     wishlist = Wishlist.find_or_404(wishlist_id)
+#
+#     wishlist.items.append(items)
+#     wishlist.save()
+#     # items.deserialize(request.get_json())
+#     wishlist.create()
+#     message = wishlist.serialize()
+#     location_url = url_for("get_wishlists",
+#                            wishlist_id=wishlist.id, _external=True)
+#     return make_response(
+#         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+#     )
 
 
 ######################################################################
