@@ -140,7 +140,7 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get('/wishlists/405')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         
-	  def test_create_wishlist_with_missing_args(self):
+    def test_create_wishlist_with_missing_args(self):
         test_wishlist = {
             "name":"wishlist1",
             "user_id":1
