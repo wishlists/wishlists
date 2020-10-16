@@ -123,7 +123,7 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get("/wishlists/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-	def test_create_wishlist_with_missing_args(self):
+    def test_create_wishlist_with_missing_args(self):
         test_wishlist = {
             "name":"wishlist1",
             "user_id":1
