@@ -23,11 +23,9 @@ Test cases can be run with the following:
 import os
 import logging
 import unittest
-from unittest.mock import MagicMock, patch
-from urllib.parse import quote_plus
 from flask import abort
 from flask_api import status  # HTTP Status Codes
-from service.models import db, Wishlist
+from service.models import db
 from service.service import app, init_db
 from .wishlist_factory import WishlistFactory
 
@@ -132,6 +130,10 @@ class TestWishlistService(unittest.TestCase):
         """ Get a wishlist thats not found """
         resp = self.app.get("/wishlists/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data['error'], "Not Found")
+        self.assertEqual(data['message'], ("404 Not Found:"
+                         " Wishlist '0' was not found."))
 
     def test_500_internal_server_error(self):
         """ Test 500_INTERNAL_SERVER_ERROR """
@@ -139,8 +141,9 @@ class TestWishlistService(unittest.TestCase):
         def internal_server_error():
             abort(500)
         resp = self.app.get('/wishlists/500')
-        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+        self.assertEqual(resp.status_code,
+                         status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def test_405_method_not_allowed(self):
         """ Test 405_METHOD_NOT_ALLOWED """
         @app.route('/wishlists/405')
@@ -160,7 +163,9 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
         data = resp.get_json()
         self.assertEqual(data['error'], "Bad Request")
-        self.assertEqual(data['message'], "Invalid Wishlist: body of request contained bad or no data")
+        self.assertEqual(data['message'],
+                         ('Invalid Wishlist:'
+                         ' body of request contained bad or no data'))
 
     def test_create_wishlist_with_unsupported_media_type(self):
         test_wishlist = {
@@ -176,7 +181,8 @@ class TestWishlistService(unittest.TestCase):
                          status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
         data = resp.get_json()
         self.assertEqual(data['error'], "Unsupported media type")
-        self.assertEqual(data['message'], "415 Unsupported Media Type: Content-Type must be application/json")
+        self.assertEqual(data['message'], ('415 Unsupported Media Type: '
+                         'Content-Type must be application/json'))
 
 ######################################################################
 #   M A I N
