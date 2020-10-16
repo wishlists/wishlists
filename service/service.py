@@ -30,10 +30,11 @@ from werkzeug.exceptions import NotFound
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
-from service.models import Wishlist
+from service.models import Wishlist, Item
 
 # Import Flask application
 from . import app
+
 
 ######################################################################
 # RETRIEVE A WISHLIST
@@ -70,29 +71,59 @@ def create_wishlists():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # ADD ITEMS TO AN EXISTING WISHLIST
 ######################################################################
-# @app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
-# def add_items_to_wishlist(wishlist_id):
-#     """
-#     Adds items to a Wishlist
-#     This endpoint will add items to the Wishlist (id in path param) based the data in the posted body
-#     """
-#     app.logger.info("Request to add items to a wishlist")
-#     check_content_type("application/json")
-#     wishlist = Wishlist.find_or_404(wishlist_id)
-#
-#     wishlist.items.append(items)
-#     wishlist.save()
-#     # items.deserialize(request.get_json())
-#     wishlist.create()
-#     message = wishlist.serialize()
-#     location_url = url_for("get_wishlists",
-#                            wishlist_id=wishlist.id, _external=True)
-#     return make_response(
-#         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-#     )
+@app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
+def add_items_to_wishlist(wishlist_id):
+    """
+    Adds items to a Wishlist
+    This endpoint will add items to the Wishlist (id in path param) based the data in the posted body
+    """
+    app.logger.info("Request to add items to a wishlist")
+    check_content_type("application/json")
+
+    wishlist = Wishlist.find_or_404(wishlist_id)
+    new_item = Item()
+    new_item.deserialize(request.get_json())
+
+    wishlist.items.append(new_item)
+
+    wishlist.save()
+    message = new_item.serialize()
+    location_url = url_for("get_item_from_wishlist",
+                           wishlist_id=wishlist.id, item_id=new_item.id, _external=True)
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
+
+
+######################################################################
+# GET ITEM FROM A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])
+def get_item_from_wishlist(wishlist_id, item_id):
+    """
+    Gets an item from a Wishlist
+    This endpoint will return an Item based on it's id
+    """
+    app.logger.info("Request to get an item from a wishlist")
+
+    wishlist = Wishlist.find_or_404(wishlist_id)
+
+    get_item = None
+
+    for item in wishlist.items:
+        if item.id == item_id:
+            get_item = item
+            break
+
+    if get_item is None:
+        raise NotFound("Item with id '{}' was not found.".format(item_id))
+
+    message = get_item.serialize()
+    return make_response(jsonify(message), status.HTTP_200_OK)
 
 
 ######################################################################

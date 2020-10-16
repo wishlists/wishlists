@@ -71,7 +71,7 @@ class PersistentBase():
         :rtype: class object
         """
         cls.logger.info("Processing lookup for id %s ...", by_id)
-        return cls.query.get_or_404(by_id, "{} '{}' was not found.".format(cls.name, by_id))
+        return cls.query.get_or_404(by_id, "{} '{}' was not found.".format(cls.__name__, by_id))
 
     @classmethod
     def init_db(cls, app):
@@ -90,6 +90,9 @@ class Item(db.Model, PersistentBase):
     """
     This class represents an item
     """
+
+    logger = logging.getLogger(__name__)
+    app = None
 
     ##################################################
     # Table Schema
@@ -172,6 +175,9 @@ class Wishlist(db.Model, PersistentBase):
     user_id = db.Column(db.Integer, nullable=False)
     items = db.relationship('Item', backref='account', lazy=True)
 
+    ##################################################
+    # SERIALIZE
+    ##################################################
     def serialize(self):
         """ Serializes a Wishlist into a dictionary """
         wishlist = {
@@ -186,6 +192,9 @@ class Wishlist(db.Model, PersistentBase):
 
         return wishlist
 
+    ##################################################
+    # DESERIALIZE
+    ##################################################
     def deserialize(self, data: dict):
         """
         Deserializes a Wishlist from a dictionary

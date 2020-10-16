@@ -6,9 +6,7 @@ import os
 from service.models import Item, Wishlist, db, DataValidationError
 from service import app
 
-DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
-)
+DATABASE_URI = os.getenv("DATABASE_URI", "postgres://postgres:postgres@localhost:5432/testdb")
 
 ######################################################################
 #  M O D E L   T E S T   C A S E S
