@@ -14,7 +14,6 @@
 
 """
 Wishlist API Service Test Suite
-
 Test cases can be run with the following:
   nosetests -v --with-spec --spec-color
   coverage report -m
@@ -73,10 +72,13 @@ class TestWishlistService(unittest.TestCase):
         for _ in range(count):
             test_wishlist = WishlistFactory()
             resp = self.app.post(
-                "/wishlists", json=test_wishlist.serialize(), content_type="application/json"
+                "/wishlists",
+                json=test_wishlist.serialize(),
+                content_type="application/json"
             )
             self.assertEqual(
-                resp.status_code, status.HTTP_201_CREATED, "Could not create test wishlist"
+                resp.status_code, status.HTTP_201_CREATED,
+                "Could not create test wishlist"
             )
             new_wishlist = resp.get_json()
             test_wishlist.id = new_wishlist["id"]
@@ -87,25 +89,31 @@ class TestWishlistService(unittest.TestCase):
         """ Create a new wishlist """
         test_wishlist = WishlistFactory()
         resp = self.app.post(
-            "/wishlists", json=test_wishlist.serialize(), content_type="application/json"
+            "/wishlists",
+            json=test_wishlist.serialize(),
+            content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         # Make sure location header is set
         location = resp.headers.get("Location", None)
-        self.assertTrue(location != None)
+        self.assertTrue(location is not None)
         # Check the data is correct
         new_wishlist = resp.get_json()
-        self.assertEqual(new_wishlist["name"], test_wishlist.name, "Names do not match")
+        self.assertEqual(new_wishlist["name"], test_wishlist.name,
+                         "Names do not match")
         self.assertEqual(
-            new_wishlist["user_id"], test_wishlist.user_id, "User id do not match"
+            new_wishlist["user_id"], test_wishlist.user_id,
+            "User id do not match"
         )
         # Check that the location header was correct
         resp = self.app.get(location, content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         new_wishlist = resp.get_json()
-        self.assertEqual(new_wishlist["name"], test_wishlist.name, "Names do not match")
+        self.assertEqual(new_wishlist["name"], test_wishlist.name,
+                         "Names do not match")
         self.assertEqual(
-            new_wishlist["user_id"], test_wishlist.user_id, "User id do not match"
+            new_wishlist["user_id"], test_wishlist.user_id,
+            "User id do not match"
         )
 
     def test_get_wishlist(self):
@@ -113,7 +121,8 @@ class TestWishlistService(unittest.TestCase):
         # get the id of a wishlist
         test_wishlist = self._create_wishlists(1)[0]
         resp = self.app.get(
-            "/wishlists/{}".format(test_wishlist.id), content_type="application/json"
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
@@ -139,31 +148,40 @@ class TestWishlistService(unittest.TestCase):
             abort(405)
         resp = self.app.get('/wishlists/405')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        
+
     def test_create_wishlist_with_missing_args(self):
         test_wishlist = {
-            "name":"wishlist1",
-            "user_id":1
+            "name": "wishlist1",
+            "user_id": 1
             }
         resp = self.app.post(
             "/wishlists", json=test_wishlist, content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        data = resp.get_json()
+        self.assertEqual(data['error'], "Bad Request")
+        self.assertEqual(data['message'], "Invalid Wishlist: body of request contained bad or no data")
 
     def test_create_wishlist_with_unsupported_media_type(self):
         test_wishlist = {
-            "name":"wishlist1",
-            "user_id":1,
-            "items":[]
+            "name": "wishlist1",
+            "user_id": 1,
+            "items": []
             }
         resp = self.app.post(
-            "/wishlists", json=test_wishlist, content_type="application/javascript"
+            "/wishlists", json=test_wishlist,
+            content_type="application/javascript"
         )
-        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-        
+        self.assertEqual(resp.status_code,
+                         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        data = resp.get_json()
+        self.assertEqual(data['error'], "Unsupported media type")
+        self.assertEqual(data['message'], "415 Unsupported Media Type: Content-Type must be application/json")
 
 ######################################################################
 #   M A I N
 ######################################################################
+
+
 if __name__ == "__main__":
     unittest.main()
