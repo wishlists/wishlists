@@ -138,8 +138,8 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get("/wishlists/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_add_items_to_wishlist(self):
-        """ Add items to an existing wishlist """
+    def test_add_item_to_wishlist(self):
+        """ Add an item to an existing wishlist """
 
         test_wishlist = self._create_wishlists(1)[0]
 
@@ -182,6 +182,57 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["product_name"], item.product_name)
 
+    def test_get_item_not_found(self):
+        """ test get_item if item is not found """
+
+        wishlist, items = self._create_items(1)
+        resp = self.app.get(
+            "/wishlists/{}/items/{}".format(wishlist.id, 55000), content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        # data = resp.get_json()
+        # print(data)
+        # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
+
+    def test_add_item_to_wishlist_unsupported_media_type(self):
+        """ test add item to a wishlist if unsupported media type """
+
+        test_wishlist = self._create_wishlists(1)[0]
+
+        new_item = ItemFactory()
+        new_item.wishlist_id = test_wishlist.id
+
+        resp = self.app.post(
+            "/wishlists/{}/items".format(test_wishlist.id), json=new_item.serialize(),
+            content_type="application/javascript"
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        # data = resp.get_json()
+        # print(data)
+        # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
+
+    def test_add_item_to_wishlist_bad_request(self):
+        """ test add item to a wishlist if bad request """
+        # get the id of a wishlist
+
+        test_wishlist = self._create_wishlists(1)[0]
+
+        new_item_json = {
+            "product_name": "laptop",
+            "wishlist_id": test_wishlist.id
+        }
+
+        print("hello")
+
+        resp = self.app.post(
+            "/wishlists/{}/items".format(test_wishlist.id), json=new_item_json,
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        # data = resp.get_json()
+        # print(data)
+        # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
 
 ######################################################################
 #   M A I N
