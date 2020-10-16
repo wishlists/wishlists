@@ -144,19 +144,24 @@ class TestWishlistService(unittest.TestCase):
 
     def test_500_internal_server_error(self):
         """ Test 500_INTERNAL_SERVER_ERROR """
+
         @app.route('/wishlists/500')
         def internal_server_error():
             abort(500)
+
         resp = self.app.get('/wishlists/500')
         self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def test_405_method_not_allowed(self):
         """ Test 405_METHOD_NOT_ALLOWED """
+
         @app.route('/wishlists/405')
         def method_not_allowed():
             abort(405)
+
         resp = self.app.get('/wishlists/405')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
     def test_add_item_to_wishlist(self):
         """ Add an item to an existing wishlist """
 
@@ -248,6 +253,27 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
         data = resp.get_json()
         self.assertEqual(data["message"], "Invalid Item: missing product_id")
+
+    def test_create_wishlist_with_missing_args(self):
+        test_wishlist = {
+            "name": "wishlist1",
+            "user_id": 1
+        }
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_wishlist_with_unsupported_media_type(self):
+        test_wishlist = {
+            "name": "wishlist1",
+            "user_id": 1,
+            "items": []
+        }
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist, content_type="application/javascript"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
 
 ######################################################################

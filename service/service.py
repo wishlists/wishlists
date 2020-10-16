@@ -51,7 +51,9 @@ def bad_request(error):
     app.logger.warning(str(error))
     return (
         jsonify(
-            status=status.HTTP_400_BAD_REQUEST, error="Bad Request", message=str(error)
+            status=status.HTTP_400_BAD_REQUEST,
+            error="Bad Request",
+            message=str(error)
         ),
         status.HTTP_400_BAD_REQUEST,
     )
@@ -63,7 +65,9 @@ def not_found(error):
     app.logger.warning(str(error))
     return (
         jsonify(
-            status=status.HTTP_404_NOT_FOUND, error="Not Found", message=str(error)
+            status=status.HTTP_404_NOT_FOUND,
+            error="Not Found",
+            message=str(error)
         ),
         status.HTTP_404_NOT_FOUND,
     )
@@ -154,7 +158,8 @@ def create_wishlists():
 def add_items_to_wishlist(wishlist_id):
     """
     Adds items to a Wishlist
-    This endpoint will add items to the Wishlist (id in path param) based the data in the posted body
+    This endpoint will add items to the Wishlist (id in path param)
+    based the data in the posted body
     """
     app.logger.info("Request to add items to a wishlist")
     check_content_type("application/json")
@@ -168,7 +173,9 @@ def add_items_to_wishlist(wishlist_id):
     wishlist.save()
     message = new_item.serialize()
     location_url = url_for("get_item_from_wishlist",
-                           wishlist_id=wishlist.id, item_id=new_item.id, _external=True)
+                           wishlist_id=wishlist.id,
+                           item_id=new_item.id,
+                           _external=True)
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )

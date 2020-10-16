@@ -40,6 +40,7 @@ class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
     pass
 
+
 ######################################################################
 #  P E R S I S T E N T   B A S E   M O D E L
 ######################################################################
@@ -71,7 +72,8 @@ class PersistentBase():
         :rtype: class object
         """
         cls.logger.info("Processing lookup for id %s ...", by_id)
-        return cls.query.get_or_404(by_id, "{} '{}' was not found.".format(cls.__name__, by_id))
+        return cls.query.get_or_404(by_id, "{} '{}' was not found."
+                                    .format(cls.__name__, by_id))
 
     @classmethod
     def init_db(cls, app):
@@ -82,6 +84,7 @@ class PersistentBase():
         db.init_app(app)
         app.app_context().push()
         db.create_all()  # make our sqlalchemy tables
+
 
 ##################################################
 # ITEM MODEL
@@ -143,6 +146,7 @@ class Item(db.Model, PersistentBase):
                 "Invalid Item: body of request contained" "bad or no data"
             )
         return self
+
 
 ##################################################
 # WISHLIST MODEL
