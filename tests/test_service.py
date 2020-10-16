@@ -191,9 +191,8 @@ class TestWishlistService(unittest.TestCase):
             "/wishlists/{}/items/{}".format(wishlist.id, 55000), content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-        # data = resp.get_json()
-        # print(data)
-        # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
+        data = resp.get_json()
+        self.assertEqual(data["message"], "404 Not Found: Item with id '{}' was not found.".format(55000))
 
     def test_add_item_to_wishlist_unsupported_media_type(self):
         """ Test add item to a wishlist if unsupported media type """
@@ -209,9 +208,9 @@ class TestWishlistService(unittest.TestCase):
         )
 
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-        # data = resp.get_json()
-        # print(data)
-        # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
+        data = resp.get_json()
+        app_type = "application/json"
+        self.assertEqual(data["message"], "415 Unsupported Media Type: Content-Type must be {}".format(app_type))
 
     def test_add_item_to_wishlist_bad_request(self):
         """ Test add item to a wishlist if bad request """
@@ -229,9 +228,8 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-        # data = resp.get_json()
-        # print(data)
-        # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
+        data = resp.get_json()
+        self.assertEqual(data["message"], "Invalid Item: missing product_id")
 
 
 ######################################################################
