@@ -26,6 +26,7 @@ import logging
 import unittest
 from unittest.mock import MagicMock, patch
 from urllib.parse import quote_plus
+from flask import abort
 from flask_api import status  # HTTP Status Codes
 from service.models import db, Wishlist
 from service.service import app, init_db
@@ -123,10 +124,21 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get("/wishlists/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-   
-        
-
-
+    def test_500_internal_server_error(self):
+        """ Test 500_INTERNAL_SERVER_ERROR """
+        @app.route('/wishlists/500')
+        def internal_server_error():
+            abort(500)
+        resp = self.app.get('/wishlists/500')
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def test_405_method_not_allowed(self):
+        """ Test 405_METHOD_NOT_ALLOWED """
+        @app.route('/wishlists/405')
+        def method_not_allowed():
+            abort(405)
+        resp = self.app.get('/wishlists/405')
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 ######################################################################
 #   M A I N
