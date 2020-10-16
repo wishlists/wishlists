@@ -139,6 +139,28 @@ class TestWishlistService(unittest.TestCase):
             abort(405)
         resp = self.app.get('/wishlists/405')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+	  def test_create_wishlist_with_missing_args(self):
+        test_wishlist = {
+            "name":"wishlist1",
+            "user_id":1
+            }
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_wishlist_with_unsupported_media_type(self):
+        test_wishlist = {
+            "name":"wishlist1",
+            "user_id":1,
+            "items":[]
+            }
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist, content_type="application/javascript"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        
 
 ######################################################################
 #   M A I N
