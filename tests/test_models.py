@@ -135,3 +135,11 @@ class TestModel(unittest.TestCase):
         wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
         self.assertEqual(str(wishlist_obj), 'electronics: id: None, user_id: 123, items: [<Item \'laptop\' id=[None] '
                                             'wishlist_id[1] product_id[1]>]')
+    def test_wishlist_repr(self):
+        """ Test Wishlist __repr__ method"""
+        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
+        print(repr(wishlist_obj))
+        self.assertEqual(repr(wishlist_obj),
+                         "<Wishlist 'electronics' user_id=[123] items[[<Item 'laptop' id=[None] "
+                         "wishlist_id[1] product_id[1]>]]>")

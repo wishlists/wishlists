@@ -31,6 +31,7 @@ from .factories import WishlistFactory, ItemFactory
 
 DATABASE_URI = os.getenv("DATABASE_URI", "postgres://postgres:postgres@localhost:5432/testdb")
 
+
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
@@ -183,7 +184,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(data["product_name"], item.product_name)
 
     def test_get_item_not_found(self):
-        """ test get_item if item is not found """
+        """ Test get_item if item is not found """
 
         wishlist, items = self._create_items(1)
         resp = self.app.get(
@@ -195,7 +196,7 @@ class TestWishlistService(unittest.TestCase):
         # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
 
     def test_add_item_to_wishlist_unsupported_media_type(self):
-        """ test add item to a wishlist if unsupported media type """
+        """ Test add item to a wishlist if unsupported media type """
 
         test_wishlist = self._create_wishlists(1)[0]
 
@@ -213,7 +214,7 @@ class TestWishlistService(unittest.TestCase):
         # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
 
     def test_add_item_to_wishlist_bad_request(self):
-        """ test add item to a wishlist if bad request """
+        """ Test add item to a wishlist if bad request """
         # get the id of a wishlist
 
         test_wishlist = self._create_wishlists(1)[0]
@@ -223,8 +224,6 @@ class TestWishlistService(unittest.TestCase):
             "wishlist_id": test_wishlist.id
         }
 
-        print("hello")
-
         resp = self.app.post(
             "/wishlists/{}/items".format(test_wishlist.id), json=new_item_json,
             content_type="application/json"
@@ -233,6 +232,7 @@ class TestWishlistService(unittest.TestCase):
         # data = resp.get_json()
         # print(data)
         # self.assertEqual(data["message"], "Item with id '{}' was not found.".format(55000))
+
 
 ######################################################################
 #   M A I N
