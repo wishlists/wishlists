@@ -123,7 +123,26 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get("/wishlists/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-   
+	def test_create_wishlist_with_missing_args(self):
+        test_wishlist = {
+            "name":"wishlist1",
+            "user_id":1
+            }
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_wishlist_with_unsupported_media_type(self):
+        test_wishlist = {
+            "name":"wishlist1",
+            "user_id":1,
+            "items":[]
+            }
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist, content_type="application/javascript"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
         
 
 
