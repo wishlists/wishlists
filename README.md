@@ -1,7 +1,7 @@
 # Introduction
-The wishlists resource allow customers to create a collection of products that they wish they had the money to purchase. A customer might have multiple wish lists so they might want to name them for easy identification. 
+The wishlists resource allow customers to create a collection of products that they wish they had the money to purchase. A customer might have multiple wishlists so they might want to name them for easy identification. 
 
-# Prerequisite Installation using Vagrant VM
+## Prerequisite Installation using Vagrant VM
 The easiest way to use this lab is with Vagrant and VirtualBox. if you don't have this software the first step is down download and install it.
 
 Download VirtualBox
@@ -17,16 +17,32 @@ Then all you have to do is clone this repo and invoke vagrant:
     cd /vagrant
     FLASK_APP=service:app flask run -h 0.0.0.0
     
-You must pass the parameters -h 0.0.0.0 to have it listed on all network adapters to that the post can be forwarded by vagrant to your host computer so that you can open the web page in a local browser at: http://localhost:5000/wishlists
-
 ### In case you already have a Vagrant VM
     vagrant up
     vagrant provision
     vagrant ssh
     cd /vagrant
     FLASK_APP=service:app flask run -h 0.0.0.0
+    
+## Features supported
 
-## Manually running the Tests
+ GET http://localhost:5000/wishlists - Return all the wishlists 
+ 
+ GET http://localhost:5000/wishlists/{wishlistID} - Return the wishlists with the given id  
+ 
+ POST http://localhost:5000/wishlists - Create a new wishlist record in the database  
+
+ PUT http://localhost:5000/wishlists/{wishlistID} - Update a wishlist record in the database  
+ 
+ DELETE http://localhost:5000/wishlists/{wishlistID} - Delete a wishlist record in the database  
+ 
+ GET http://localhost:5000/wishlists?name="wishlist_1" - Query the database by the name of the wishlist   
+
+ PUT http://localhost:5000/wishlists/{wishlistId}/disabled - It disables the target wishlist
+ 
+ PUT http://localhost:5000/wishlists/{wishlistId}/enabled - It enables the target wishlist
+ 
+ ## Manually running the Tests
 
 Run the tests using `nose`
 
@@ -50,8 +66,10 @@ You can also manually run `nosetests` with `coverage` (but `setup.cfg` does this
     $ nosetests --with-coverage --cover-package=service
 ```
 
-## Checking pep8 compliance
-
-```shell
-    $ flake8 --count --max-complexity=10 --statistics model, service
+## Running Pylint to check PEP8
 ```
+vagrant up
+vagrant ssh
+cd /vagrant
+pylint --rcfile=pylint.conf service/*.py
+pylint --rcfile=pylint.conf tests/*.py
