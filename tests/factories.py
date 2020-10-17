@@ -12,11 +12,9 @@ class WishlistFactory(factory.Factory):
     class Meta:
         model = Wishlist
 
-    id = factory.Sequence(lambda n: n+1)
+    id = factory.Sequence(lambda n: n)
     name = factory.Faker("name")
     user_id = FuzzyInteger(0, 1000)
-    items = [Item(product_name='laptop', product_id=1),
-             Item(product_name='iPhone', product_id=2)]
 
 
 class ItemFactory(factory.Factory):
@@ -25,12 +23,6 @@ class ItemFactory(factory.Factory):
     class Meta:
         model = Item
 
-    id = factory.Sequence(lambda n: n+1)
+    id = factory.Sequence(lambda n: n)
     product_name = FuzzyChoice(choices=["samsung mobile", "wire", "other"])
     product_id = FuzzyInteger(0, 1000)
-
-
-if __name__ == "__main__":
-    for _ in range(10):
-        wishlist = WishlistFactory()
-        print(wishlist.serialize())

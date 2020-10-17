@@ -49,7 +49,7 @@ class PersistentBase():
 
     def create(self):
         """
-        Creates a Account to the database
+        Creates an Account to the database
         """
         logger.info("Creating %s", self.name)
         self.id = None  # id must be none to generate next primary key
@@ -102,14 +102,18 @@ class PersistentBase():
         app.app_context().push()
         db.create_all()  # make our sqlalchemy tables
 
+    @classmethod
+    def all(cls):
+        """ Returns all of the records in the database """
+        cls.logger.info("Processing all Wishlists")
+        return cls.query.all()
+
 
 ##################################################
 # ITEM MODEL
 ##################################################
 class Item(db.Model, PersistentBase):
-    """
-    This class represents an item
-    """
+    """ This class represents an item """
 
     logger = logging.getLogger(__name__)
     app = None
@@ -124,15 +128,15 @@ class Item(db.Model, PersistentBase):
     product_name = db.Column(db.String(63), nullable=False)
 
     def __repr__(self):
-        return "<Item %r id=[%s] wishlist_id[%s] product_id[%s]>" % \
-               (self.product_name, self.id, self.wishlist_id, self.product_id)
+        return "<Item %r id=[%s] wishlist_id[%s] product_id[%s]>" % (
+            self.product_name, self.id, self.wishlist_id, self.product_id)
 
     def __str__(self):
         return "%s: product_id: %s, item_id: %s, wishlist_id: %s" % (
             self.product_name, self.product_id, self.id, self.wishlist_id)
 
     ##################################################
-    # SERIALIZE
+    # INSTANCE METHODS
     ##################################################
     def serialize(self):
         """ Serializes an Item into a dictionary """
@@ -143,9 +147,6 @@ class Item(db.Model, PersistentBase):
             "product_name": self.product_name
         }
 
-    ##################################################
-    # DESERIALIZE
-    ##################################################
     def deserialize(self, data):
         """
         Deserializes an Item from a dictionary
@@ -180,8 +181,8 @@ class Wishlist(db.Model, PersistentBase):
     app = None
 
     def __repr__(self):
-        return "<Wishlist %r user_id=[%s] items[%s]>" % \
-               (self.name, self.user_id, self.items)
+        return "<Wishlist %r user_id=[%s] items[%s]>" % (
+            self.name, self.user_id, self.items)
 
     def __str__(self):
         return "%s: id: %s, user_id: %s, items: %s" % (
@@ -200,7 +201,7 @@ class Wishlist(db.Model, PersistentBase):
 
 
     ##################################################
-    # SERIALIZE
+    # INSTANCE METHODS
     ##################################################
     def serialize(self):
         """ Serializes a Wishlist into a dictionary """
@@ -216,9 +217,6 @@ class Wishlist(db.Model, PersistentBase):
 
         return wishlist
 
-    ##################################################
-    # DESERIALIZE
-    ##################################################
     def deserialize(self, data: dict):
         """
         Deserializes a Wishlist from a dictionary
@@ -246,3 +244,35 @@ class Wishlist(db.Model, PersistentBase):
                 "Invalid Wishlist: body of request contained bad or no data"
             )
         return self
+
+    ##################################################
+    # CLASS METHODS
+    ##################################################
+
+    @classmethod
+    def find_by_name(cls, name: str):
+        """Returns all Wishlists with the given name
+
+        :param name: the name of the Wishlists you want to match
+        :type name: str
+
+        :return: a collection of Wishlists with that name
+        :rtype: list
+
+        """
+        cls.logger.info("Processing name query for %s ...", name)
+        return cls.query.filter(cls.name == name)
+
+    @classmethod
+    def find_by_user_id(cls, user_id: int):
+        """Returns all Wishlists with the given user id
+
+        :param user_id: the user id of the Wishlists you want to match
+        :type user_id: str
+
+        :return: a collection of Wishlists with that user id
+        :rtype: list
+
+        """
+        cls.logger.info("Processing user id query for %s ...", user_id)
+        return cls.query.filter(cls.user_id == user_id)

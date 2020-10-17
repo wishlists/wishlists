@@ -116,6 +116,51 @@ def internal_server_error(error):
 
 
 ######################################################################
+# GET INDEX
+######################################################################
+@app.route("/")
+def index():
+    """ Root URL response """
+    app.logger.info("Request for Root URL")
+    return (
+        jsonify(
+            name="Wishlist Demo REST API Service",
+            version="1.0",
+            paths=url_for("list_wishlists", _external=True),
+        ),
+        status.HTTP_200_OK,
+    )
+
+######################################################################
+# LIST ALL WISHLISTS
+######################################################################
+@app.route("/wishlists", methods=["GET"])
+def list_wishlists():
+    """ Returns all of the Wishlists """
+    app.logger.info("Request for wishlist list")
+    wishlists = []
+    user_id = request.args.get("user_id")
+    name = request.args.get("name")
+    if user_id:
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            abort(400, "The user_id should be an integer")
+        wishlists = Wishlist.find_by_user_id(user_id)
+    elif name:
+        try:
+            name = str(name)
+        except ValueError:
+            abort(400, "The name should be a string")
+        wishlists = Wishlist.find_by_name(name)
+    else:
+        wishlists = Wishlist.all()
+
+    results = [wishlist.serialize() for wishlist in wishlists]
+    app.logger.info("Returning %d wishlists", len(results))
+    return make_response(jsonify(results), status.HTTP_200_OK)
+
+######################################################################
 # RETRIEVE A WISHLIST
 ######################################################################
 @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])

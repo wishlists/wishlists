@@ -5,6 +5,7 @@ import logging
 import os
 from service.models import Item, Wishlist, db, DataValidationError
 from service import app
+from tests.factories import WishlistFactory, ItemFactory
 
 DATABASE_URI = os.getenv("DATABASE_URI",
                          "postgres://postgres:postgres@localhost:5432/testdb")
@@ -44,8 +45,130 @@ class TestModel(unittest.TestCase):
         db.drop_all()
 
 ######################################################################
+#  H E L P E R   M E T H O D S
+######################################################################
+
+
+    def _create_wishlist(self, items=[]):
+        """ Creates an account from a Factory """
+        fake_wishlist = WishlistFactory()
+        wishlist = Wishlist(
+            name=fake_wishlist.name,
+            user_id=fake_wishlist.user_id,
+            items=items
+        )
+        self.assertTrue(wishlist is not None)
+        self.assertEqual(wishlist.id, None)
+        return wishlist
+
+    def _create_item(self):
+        """ Creates fake items from factory """
+        fake_item = ItemFactory()
+        item = Item(
+            wishlist_id=fake_item.wishlist_id,
+            product_name=fake_item.product_name,
+            product_id=fake_item.product_id
+        )
+        self.assertTrue(item is not None)
+        self.assertEqual(item.id, None)
+        return item
+
+######################################################################
 #  T E S T   C A S E S
 ######################################################################
+
+
+    def test_create_a_wishlist(self):
+        """ Create a wishlist and assert that it exists """
+        fake_wishlist = WishlistFactory()
+        wishlist = Wishlist(
+            name=fake_wishlist.name,
+            user_id=fake_wishlist.user_id
+        )
+        self.assertTrue(wishlist is not None)
+        self.assertEqual(wishlist.id, None)
+        self.assertEqual(wishlist.name, fake_wishlist.name)
+        self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
+
+    def test_add_a_wishlist(self):
+        """ Create a wishlist and add it to the database """
+        wishlists = Wishlist.all()
+        self.assertEqual(wishlists, [])
+        wishlist = self._create_wishlist()
+        wishlist.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertEqual(wishlist.id, 1)
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), 1)
+
+    def test_update_wishlist(self):
+        """ Update a wishlist """
+        wishlist = self._create_wishlist()
+        wishlist.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertEqual(wishlist.id, 1)
+
+        # Fetch it back
+        wishlist = Wishlist.find_or_404(wishlist.id)
+        wishlist.name = "new_name"
+        wishlist.save()
+
+        # Fetch it back again
+        wishlist = Wishlist.find_or_404(wishlist.id)
+        self.assertEqual(wishlist.name, "new_name")
+
+    def test_add_wishlist_item(self):
+        """ Create a wishlist with an item and add it to the database """
+        wishlists = Wishlist.all()
+        self.assertEqual(wishlists, [])
+        wishlist = self._create_wishlist()
+        item = self._create_item()
+        wishlist.items.append(item)
+        wishlist.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertEqual(wishlist.id, 1)
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), 1)
+
+        self.assertEqual(wishlist.items[0].product_name, item.product_name)
+
+        item2 = self._create_item()
+        wishlist.items.append(item2)
+        wishlist.save()
+
+        self.assertEqual(len(wishlist.items), 2)
+        self.assertEqual(wishlist.items[1].product_name, item2.product_name)
+
+    def test_find_or_404(self):
+        """ Find or throw 404 error """
+        wishlist = self._create_wishlist()
+        wishlist.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertEqual(wishlist.id, 1)
+
+        # Fetch it back
+        wishlist = Wishlist.find_or_404(wishlist.id)
+        self.assertEqual(wishlist.id, 1)
+
+    def test_find_by_name(self):
+        """ Find by name """
+        wishlist = self._create_wishlist()
+        wishlist.create()
+
+        # Fetch it back by name
+        same_wishlist = Wishlist.find_by_name(wishlist.name)[0]
+        self.assertEqual(same_wishlist.id, wishlist.id)
+        self.assertEqual(same_wishlist.name, wishlist.name) 
+
+    def test_find_by_user_id(self):
+        """ Find by user id"""
+        wishlist = self._create_wishlist()
+        wishlist.create()
+
+        # Fetch it back by user id
+        same_wishlist = Wishlist.find_by_user_id(wishlist.user_id)[0]
+        self.assertEqual(same_wishlist.id, wishlist.id)
+        self.assertEqual(same_wishlist.user_id, wishlist.user_id)
 
     def test_delete_a_wishlist(self):
         """ Delete a Wishlist """
