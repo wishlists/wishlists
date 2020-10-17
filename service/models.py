@@ -63,6 +63,11 @@ class PersistentBase():
         logger.info("Saving %s", self.name)
         db.session.commit()
 
+    def delete(self):
+        """ Removes a Wishlist from the data store """
+        db.session.delete(self)
+        db.session.commit()
+
     @classmethod
     def find_or_404(cls, by_id: int):
         """Finds a record by it's ID
