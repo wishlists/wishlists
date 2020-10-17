@@ -198,6 +198,7 @@ class Wishlist(db.Model, PersistentBase):
                             cascade="all,delete",
                             lazy=True)
 
+
     ##################################################
     # SERIALIZE
     ##################################################
