@@ -244,7 +244,7 @@ class Wishlist(db.Model, PersistentBase):
         return cls.query.filter(cls.name == name)
 
     @classmethod
-    def find_by_user_id(cls, user_id: str):
+    def find_by_user_id(cls, user_id: int):
         """Returns all Wishlists with the given user id
 
         :param user_id: the user id of the Wishlists you want to match
