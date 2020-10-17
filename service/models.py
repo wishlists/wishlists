@@ -256,4 +256,3 @@ class Wishlist(db.Model, PersistentBase):
         """
         cls.logger.info("Processing user id query for %s ...", user_id)
         return cls.query.filter(cls.user_id == user_id)
-    
