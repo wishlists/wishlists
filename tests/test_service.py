@@ -23,7 +23,8 @@ Test cases can be run with the following:
 import os
 import logging
 import unittest
-from unittest.mock import MagicMock, patchfrom flask import abort
+from unittest.mock import MagicMock, patch
+from flask import abort
 from flask_api import status  # HTTP Status Codes
 from service.models import db
 from service.service import app, init_db
