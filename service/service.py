@@ -164,9 +164,17 @@ def add_items_to_wishlist(wishlist_id):
     app.logger.info("Request to add items to a wishlist")
     check_content_type("application/json")
 
-    wishlist = Wishlist.find_or_404(wishlist_id)
     new_item = Item()
     new_item.deserialize(request.get_json())
+
+    if new_item.wishlist_id != wishlist_id:
+        raise DataValidationError("wishlist_id in Item '{}' does not match "
+                                  "wishlist_id in the url {}"
+                                  .format(new_item.wishlist_id, wishlist_id))
+
+    wishlist = Wishlist.find_or_404(wishlist_id)
+
+
 
     wishlist.items.append(new_item)
 

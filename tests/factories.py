@@ -15,7 +15,8 @@ class WishlistFactory(factory.Factory):
     id = factory.Sequence(lambda n: n+1)
     name = factory.Faker("name")
     user_id = FuzzyInteger(0, 1000)
-    items = [Item(product_name='laptop', product_id=1), Item(product_name='iPhone', product_id=2)]
+    items = [Item(product_name='laptop', product_id=1),
+             Item(product_name='iPhone', product_id=2)]
 
 
 class ItemFactory(factory.Factory):
