@@ -30,10 +30,11 @@ from werkzeug.exceptions import NotFound
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
-from service.models import Wishlist, DataValidationError
+from service.models import Wishlist, Item, DataValidationError
 
 # Import Flask application
 from . import app
+
 
 ######################################################################
 # Error Handlers
@@ -50,7 +51,9 @@ def bad_request(error):
     app.logger.warning(str(error))
     return (
         jsonify(
-            status=status.HTTP_400_BAD_REQUEST, error="Bad Request", message=str(error)
+            status=status.HTTP_400_BAD_REQUEST,
+            error="Bad Request",
+            message=str(error)
         ),
         status.HTTP_400_BAD_REQUEST,
     )
@@ -62,7 +65,9 @@ def not_found(error):
     app.logger.warning(str(error))
     return (
         jsonify(
-            status=status.HTTP_404_NOT_FOUND, error="Not Found", message=str(error)
+            status=status.HTTP_404_NOT_FOUND,
+            error="Not Found",
+            message=str(error)
         ),
         status.HTTP_404_NOT_FOUND,
     )
@@ -108,7 +113,7 @@ def internal_server_error(error):
         ),
         status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
-    
+
 
 ######################################################################
 # RETRIEVE A WISHLIST
@@ -120,9 +125,7 @@ def get_wishlists(wishlist_id):
     This endpoint will return a Wishlist based on it's id
     """
     app.logger.info("Request for wishlist with id: %s", wishlist_id)
-    wishlist = Wishlist.find(wishlist_id)
-    if not wishlist:
-        raise NotFound("Wishlist '{}' was not found.".format(wishlist_id))
+    wishlist = Wishlist.find_or_404(wishlist_id)
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
 
@@ -146,6 +149,71 @@ def create_wishlists():
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
+
+
+######################################################################
+# ADD ITEMS TO AN EXISTING WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
+def add_items_to_wishlist(wishlist_id):
+    """
+    Adds items to a Wishlist
+    This endpoint will add items to the Wishlist (id in path param)
+    based the data in the posted body
+    """
+    app.logger.info("Request to add items to a wishlist")
+    check_content_type("application/json")
+
+    new_item = Item()
+    new_item.deserialize(request.get_json())
+
+    if new_item.wishlist_id != wishlist_id:
+        raise DataValidationError("wishlist_id in Item '{}' does not match "
+                                  "wishlist_id in the url {}"
+                                  .format(new_item.wishlist_id, wishlist_id))
+
+    wishlist = Wishlist.find_or_404(wishlist_id)
+
+
+
+    wishlist.items.append(new_item)
+
+    wishlist.save()
+    message = new_item.serialize()
+    location_url = url_for("get_item_from_wishlist",
+                           wishlist_id=wishlist.id,
+                           item_id=new_item.id,
+                           _external=True)
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
+
+
+######################################################################
+# GET ITEM FROM A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])
+def get_item_from_wishlist(wishlist_id, item_id):
+    """
+    Gets an item from a Wishlist
+    This endpoint will return an Item based on it's id
+    """
+    app.logger.info("Request to get an item from a wishlist")
+
+    wishlist = Wishlist.find_or_404(wishlist_id)
+
+    get_item = None
+
+    for item in wishlist.items:
+        if item.id == item_id:
+            get_item = item
+            break
+
+    if get_item is None:
+        raise NotFound("Item with id '{}' was not found.".format(item_id))
+
+    message = get_item.serialize()
+    return make_response(jsonify(message), status.HTTP_200_OK)
 
 
 ######################################################################

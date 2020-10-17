@@ -41,19 +41,39 @@ class DataValidationError(Exception):
     pass
 
 
-class Item(db.Model):
-    """
-    This class represents an item
-    """
+######################################################################
+#  P E R S I S T E N T   B A S E   M O D E L
+######################################################################
+class PersistentBase():
+    """ Base class added persistent methods """
 
-    ##################################################
-    # Table Schema
-    ##################################################
-    id = db.Column(db.Integer, primary_key=True)
-    wishlist_id = db.Column(db.Integer, db.ForeignKey('wishlist.id'),
-                            nullable=False)
-    product_id = db.Column(db.Integer, nullable=False)
-    product_name = db.Column(db.String(63), nullable=False)
+    def create(self):
+        """
+        Creates a Account to the database
+        """
+        logger.info("Creating %s", self.name)
+        self.id = None  # id must be none to generate next primary key
+        db.session.add(self)
+        db.session.commit()
+
+    def save(self):
+        """
+        Updates a record to the database
+        """
+        logger.info("Saving %s", self.name)
+        db.session.commit()
+
+    @classmethod
+    def find_or_404(cls, by_id: int):
+        """Finds a record by it's ID
+        :param wishlist_id: the id of the record to find
+        :type wishlist_id: int
+        :return: an instance with the class, or None if not found
+        :rtype: class object
+        """
+        cls.logger.info("Processing lookup for id %s ...", by_id)
+        return cls.query.get_or_404(by_id, "{} '{}' was not found."
+                                    .format(cls.__name__, by_id))
 
     @classmethod
     def init_db(cls, app):
@@ -65,6 +85,27 @@ class Item(db.Model):
         app.app_context().push()
         db.create_all()  # make our sqlalchemy tables
 
+
+##################################################
+# ITEM MODEL
+##################################################
+class Item(db.Model, PersistentBase):
+    """
+    This class represents an item
+    """
+
+    logger = logging.getLogger(__name__)
+    app = None
+
+    ##################################################
+    # Table Schema
+    ##################################################
+    id = db.Column(db.Integer, primary_key=True)
+    wishlist_id = db.Column(db.Integer, db.ForeignKey('wishlist.id'),
+                            nullable=False)
+    product_id = db.Column(db.Integer, nullable=False)
+    product_name = db.Column(db.String(63), nullable=False)
+
     def __repr__(self):
         return "<Item %r id=[%s] wishlist_id[%s] product_id[%s]>" % \
                (self.product_name, self.id, self.wishlist_id, self.product_id)
@@ -73,6 +114,9 @@ class Item(db.Model):
         return "%s: product_id: %s, item_id: %s, wishlist_id: %s" % (
             self.product_name, self.product_id, self.id, self.wishlist_id)
 
+    ##################################################
+    # SERIALIZE
+    ##################################################
     def serialize(self):
         """ Serializes an Item into a dictionary """
         return {
@@ -82,6 +126,9 @@ class Item(db.Model):
             "product_name": self.product_name
         }
 
+    ##################################################
+    # DESERIALIZE
+    ##################################################
     def deserialize(self, data):
         """
         Deserializes an Item from a dictionary
@@ -101,7 +148,10 @@ class Item(db.Model):
         return self
 
 
-class Wishlist(db.Model):
+##################################################
+# WISHLIST MODEL
+##################################################
+class Wishlist(db.Model, PersistentBase):
     """
     Class that represents a Wishlist
 
@@ -129,16 +179,9 @@ class Wishlist(db.Model):
     user_id = db.Column(db.Integer, nullable=False)
     items = db.relationship('Item', backref='account', lazy=True)
 
-    @classmethod
-    def init_db(cls, app):
-        """ Initializes the database session """
-        logger.info("Initializing database")
-        cls.app = app
-        # This is where we initialize SQLAlchemy from the Flask app
-        db.init_app(app)
-        app.app_context().push()
-        db.create_all()  # make our sqlalchemy tables
-
+    ##################################################
+    # SERIALIZE
+    ##################################################
     def serialize(self):
         """ Serializes a Wishlist into a dictionary """
         wishlist = {
@@ -153,6 +196,9 @@ class Wishlist(db.Model):
 
         return wishlist
 
+    ##################################################
+    # DESERIALIZE
+    ##################################################
     def deserialize(self, data: dict):
         """
         Deserializes a Wishlist from a dictionary
@@ -180,21 +226,3 @@ class Wishlist(db.Model):
                 "Invalid Wishlist: body of request contained bad or no data"
             )
         return self
-
-    def create(self):
-        """
-        Creates a Wishlist to the data store
-        """
-        db.session.add(self)
-        db.session.commit()
-
-    @classmethod
-    def find(cls, wishlist_id: int):
-        """Finds a Wishlist by it's ID
-        :param wishlist_id: the id of the Wishlist to find
-        :type wishlist_id: int
-        :return: an instance with the wishlist_id, or None if not found
-        :rtype: Wishlist
-        """
-        cls.logger.info("Processing lookup for id %s ...", wishlist_id)
-        return cls.query.get(wishlist_id)

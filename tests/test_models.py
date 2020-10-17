@@ -6,9 +6,8 @@ import os
 from service.models import Item, Wishlist, db, DataValidationError
 from service import app
 
-DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
-)
+DATABASE_URI = os.getenv("DATABASE_URI",
+                         "postgres://postgres:postgres@localhost:5432/testdb")
 
 ######################################################################
 #  M O D E L   T E S T   C A S E S
@@ -65,7 +64,8 @@ class TestModel(unittest.TestCase):
 
     def test_deserialize_a_item(self):
         """ Test deserialization of an Item """
-        data = {"id": 1, "product_name": "laptop", "product_id": 1, "wishlist_id": 1}
+        data = {"id": 1, "product_name": "laptop",
+                "product_id": 1, "wishlist_id": 1}
         item = Item()
         item.deserialize(data)
         self.assertNotEqual(item, None)
@@ -129,11 +129,25 @@ class TestModel(unittest.TestCase):
     def test_item_str(self):
         """ Test Item __str__ method"""
         item = Item(product_name='laptop', product_id=1, wishlist_id=1)
-        self.assertEqual(str(item), 'laptop: product_id: 1, item_id: None, wishlist_id: 1')
+        self.assertEqual(str(item),
+                         'laptop: product_id: 1, item_id: None, '
+                         'wishlist_id: 1')
 
     def test_wishlist_str(self):
         """ Test Wishlist __str__ method"""
         item = Item(product_name='laptop', product_id=1, wishlist_id=1)
         wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
-        self.assertEqual(str(wishlist_obj), 'electronics: id: None, user_id: 123, items: [<Item \'laptop\' id=[None] '
-                                            'wishlist_id[1] product_id[1]>]')
+        self.assertEqual(str(wishlist_obj),
+                         'electronics: id: None, user_id: 123, items: '
+                         '[<Item \'laptop\' id=[None] wishlist_id[1] '
+                         'product_id[1]>]')
+
+    def test_wishlist_repr(self):
+        """ Test Wishlist __repr__ method"""
+        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
+        print(repr(wishlist_obj))
+        self.assertEqual(repr(wishlist_obj),
+                         "<Wishlist 'electronics' user_id=[123] "
+                         "items[[<Item 'laptop' id=[None] "
+                         "wishlist_id[1] product_id[1]>]]>")
