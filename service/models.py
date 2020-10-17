@@ -63,6 +63,23 @@ class PersistentBase():
         logger.info("Saving %s", self.name)
         db.session.commit()
 
+    def delete(self):
+        """ Removes a Wishlist from the data store """
+        logger.info("Deleting %s", self.name)
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def find(cls, wishlist_id: int):
+        """Finds a Wishlist by it's ID
+        :param wishlist_id: the id of the Wishlist to find
+        :type wishlist_id: int
+        :return: an instance with the wishlist_id, or None if not found
+        :rtype: class object
+        """
+        cls.logger.info("Processing lookup for id %s ...", wishlist_id)
+        return cls.query.get(wishlist_id)
+
     @classmethod
     def find_or_404(cls, by_id: int):
         """Finds a record by it's ID
@@ -178,7 +195,10 @@ class Wishlist(db.Model, PersistentBase):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63), nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
-    items = db.relationship('Item', backref='account', lazy=True)
+    items = db.relationship('Item', backref='wishlist',
+                            cascade="all,delete",
+                            lazy=True)
+
 
     ##################################################
     # INSTANCE METHODS

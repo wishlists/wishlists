@@ -379,6 +379,39 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get('/wishlists/500')
         self.assertEqual(resp.status_code,
                          status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    def test_delete_wishlist(self):
+        """ Delete a non-existing Wishlist """
+        test_wishlist = WishlistFactory()
+        resp = self.app.delete(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)
+        # make sure they are deleted
+        resp = self.app.get(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_existing_wishlist(self):
+        """ Delete an existing Wishlist """
+        test_wishlist = self._create_wishlists(1)[0]
+        resp = self.app.delete(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)
+        # make sure they are deleted
+        resp = self.app.get(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
 
 ######################################################################
 #   M A I N

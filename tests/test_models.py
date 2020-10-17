@@ -48,6 +48,7 @@ class TestModel(unittest.TestCase):
 #  H E L P E R   M E T H O D S
 ######################################################################
 
+
     def _create_wishlist(self, items=[]):
         """ Creates an account from a Factory """
         fake_wishlist = WishlistFactory()
@@ -75,6 +76,7 @@ class TestModel(unittest.TestCase):
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+
 
     def test_create_a_wishlist(self):
         """ Create a wishlist and assert that it exists """
@@ -167,6 +169,18 @@ class TestModel(unittest.TestCase):
         same_wishlist = Wishlist.find_by_user_id(wishlist.user_id)[0]
         self.assertEqual(same_wishlist.id, wishlist.id)
         self.assertEqual(same_wishlist.user_id, wishlist.user_id)
+
+    def test_delete_a_wishlist(self):
+        """ Delete a Wishlist """
+        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
+        wishlist_obj.create()
+        wishlist = Wishlist.find(wishlist_id=1)
+        self.assertNotEqual(wishlist, None)
+        # delete the wishlist and make sure it isn't in the database
+        wishlist_obj.delete()
+        wishlist = Wishlist.find(wishlist_id=1)
+        self.assertEqual(wishlist, None)
 
     def test_serialize_an_item(self):
         """Test Serialize an Item """

@@ -259,6 +259,24 @@ def get_item_from_wishlist(wishlist_id, item_id):
 
 
 ######################################################################
+# DELETE A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
+def delete_wishlists(wishlist_id):
+    """
+    Delete a Wishlist
+    This endpoint will delete a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        wishlist.delete()
+
+    app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 def init_db():
