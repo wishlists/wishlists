@@ -173,9 +173,6 @@ def add_items_to_wishlist(wishlist_id):
                                   .format(new_item.wishlist_id, wishlist_id))
 
     wishlist = Wishlist.find_or_404(wishlist_id)
-
-
-
     wishlist.items.append(new_item)
 
     wishlist.save()

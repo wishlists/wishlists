@@ -68,7 +68,7 @@ class PersistentBase():
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
-    
+
     @classmethod
     def find(cls, wishlist_id: int):
         """Finds a Wishlist by it's ID
@@ -78,7 +78,7 @@ class PersistentBase():
         :rtype: class object
         """
         cls.logger.info("Processing lookup for id %s ...", wishlist_id)
-        return cls.query.get(wishlist_id)    
+        return cls.query.get(wishlist_id)
 
     @classmethod
     def find_or_404(cls, by_id: int):
