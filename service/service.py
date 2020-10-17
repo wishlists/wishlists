@@ -272,4 +272,3 @@ def check_content_type(content_type):
     if request.headers["Content-Type"] == content_type:
         return
     abort(415, "Content-Type must be {}".format(content_type))
-    
