@@ -23,10 +23,10 @@ Test cases can be run with the following:
 import os
 import logging
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from flask import abort
 from flask_api import status  # HTTP Status Codes
-from service.models import db, DataValidationError, Wishlist, Item
+from service.models import db, DataValidationError
 from service.service import app, init_db
 from .factories import WishlistFactory, ItemFactory
 
@@ -150,7 +150,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 10)
-    
+
     def test_get_wishlist_list_by_name(self):
         """ Get a list of Wishlists with the same name """
         wishlist = self._create_wishlists(1)[0]
@@ -160,7 +160,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(len(data), 1)
         same_wishlist = data[0]
         self.assertEqual(same_wishlist["name"], wishlist.name)
-    
+
     def test_get_wishlist_list_by_user_id(self):
         """ Get a list of Wishlists with the same user id """
         wishlist = self._create_wishlists(1)[0]
@@ -170,7 +170,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(len(data), 1)
         same_wishlist = data[0]
         self.assertEqual(same_wishlist["user_id"], wishlist.user_id)
-    
+
     def test_get_wishlist_list_by_user_id_wrong_data_type(self):
         resp = self.app.get("/wishlists?user_id=\"1\"")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
@@ -356,7 +356,7 @@ class TestWishlistService(unittest.TestCase):
                                           "match wishlist_id in the url {}"
                          .format(item.wishlist_id,
                                  test_wishlist.id))
-    
+
     @patch('service.service.Wishlist')
     def test_method_not_allowed(self, method_not_allowed_mock):
         """ Test a METHOD_NOT_ALLOWED error from Find By Name """
