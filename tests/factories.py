@@ -16,6 +16,7 @@ class WishlistFactory(factory.Factory):
     name = factory.Faker("name")
     user_id = FuzzyInteger(0, 1000)
 
+
 class ItemFactory(factory.Factory):
     """ Creates fake item that you don't have to feed """
 
