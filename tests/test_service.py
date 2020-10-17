@@ -214,7 +214,7 @@ class TestWishlistService(unittest.TestCase):
                           ' body of request contained bad or no data'))
 
     def test_create_wishlist_with_unsupported_media_type(self):
-        """ Test the wishlist add request has unsupported media type """
+        """ Test the wishlist add request with unsupported media type """
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1,
