@@ -62,7 +62,7 @@ class TestWishlistService(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
-    def _create_wishlists(self, count=1):
+    def _create_wishlists(self, count):
         """ Factory method to create wishlists in bulk """
         wishlists = []
         for _ in range(count):
@@ -104,6 +104,13 @@ class TestWishlistService(unittest.TestCase):
             items.append(test_item)
         return wishlist, items
 
+    def test_index(self):
+        """ Test the Home Page """
+        resp = self.app.get("/")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["name"], "Wishlist Demo REST API Service")
+
     def test_create_wishlist(self):
         """ Create a new wishlist """
         test_wishlist = WishlistFactory()
@@ -135,6 +142,34 @@ class TestWishlistService(unittest.TestCase):
             "User id do not match"
         )
 
+    def test_get_wishlist_list(self):
+        """ Get a list of Wishlists """
+        self._create_wishlists(10)
+        resp = self.app.get("/wishlists")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 10)
+    
+    def test_get_wishlist_list_by_name(self):
+        """ Get a list of Wishlists with the same name """
+        wishlist = self._create_wishlists(1)[0]
+        resp = self.app.get("/wishlists?name={}".format(wishlist.name))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 1)
+        same_wishlist = data[0]
+        self.assertEqual(same_wishlist["name"], wishlist.name)
+    
+    def test_get_wishlist_list_by_user_id(self):
+        """ Get a list of Wishlists with the same user id """
+        wishlist = self._create_wishlists(1)[0]
+        resp = self.app.get("/wishlists?user_id={}".format(wishlist.user_id))
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 1)
+        same_wishlist = data[0]
+        self.assertEqual(same_wishlist["user_id"], wishlist.user_id)
+
     def test_get_wishlist(self):
         """ Get a single wishlist """
         # get the id of a wishlist
@@ -155,28 +190,6 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(data['error'], "Not Found")
         self.assertEqual(data['message'], ("404 Not Found:"
                                            " Wishlist '0' was not found."))
-
-    def test_500_internal_server_error(self):
-        """ Test 500_INTERNAL_SERVER_ERROR """
-
-        @app.route('/wishlists/500')
-        def internal_server_error():
-            abort(500)
-
-        resp = self.app.get('/wishlists/500')
-        self.assertEqual(resp.status_code,
-                         status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    def test_405_method_not_allowed(self):
-        """ Test 405_METHOD_NOT_ALLOWED """
-
-        @app.route('/wishlists/405')
-        def method_not_allowed():
-            abort(405)
-
-        resp = self.app.get('/wishlists/405')
-        self.assertEqual(resp.status_code,
-                         status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_create_wishlist_with_missing_args(self):
         test_wishlist = {
@@ -213,9 +226,7 @@ class TestWishlistService(unittest.TestCase):
 
     def test_add_item_to_wishlist(self):
         """ Add an item to an existing wishlist """
-
         test_wishlist = self._create_wishlists(1)[0]
-
         new_item = ItemFactory()
         new_item.wishlist_id = test_wishlist.id
 
@@ -232,7 +243,7 @@ class TestWishlistService(unittest.TestCase):
         # Check the data is correct
         resp_item = resp.get_json()
 
-        self.assertEqual(resp_item["wishlist_id"], new_item.id,
+        self.assertEqual(resp_item["wishlist_id"], new_item.wishlist_id,
                          "Wishlist id does not match")
         self.assertEqual(resp_item["product_id"], new_item.product_id,
                          "Product id does not match")
@@ -245,7 +256,7 @@ class TestWishlistService(unittest.TestCase):
         loc_resp_item = resp.get_json()
         self.assertEqual(loc_resp_item["id"], resp_item['id'],
                          "item id does not match")
-        self.assertEqual(loc_resp_item["wishlist_id"], new_item.id,
+        self.assertEqual(loc_resp_item["wishlist_id"], new_item.wishlist_id,
                          "Wishlist id does not match")
         self.assertEqual(loc_resp_item["product_id"], new_item.product_id,
                          "Product id does not match")
@@ -341,6 +352,27 @@ class TestWishlistService(unittest.TestCase):
                          .format(item.wishlist_id,
                                  test_wishlist.id))
 
+    def test_405_method_not_allowed(self):
+        """ Test 405_METHOD_NOT_ALLOWED """
+
+        @app.route('/wishlists/405')
+        def method_not_allowed():
+            abort(405)
+
+        resp = self.app.get('/wishlists/405')
+        self.assertEqual(resp.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_500_internal_server_error(self):
+        """ Test 500_INTERNAL_SERVER_ERROR """
+
+        @app.route('/wishlists/500')
+        def internal_server_error():
+            abort(500)
+
+        resp = self.app.get('/wishlists/500')
+        self.assertEqual(resp.status_code,
+                         status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 ######################################################################
 #   M A I N
