@@ -47,6 +47,18 @@ class TestModel(unittest.TestCase):
 #  T E S T   C A S E S
 ######################################################################
 
+    def test_delete_a_wishlist(self):
+        """ Delete a Wishlist """
+        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
+        wishlist_obj.create()
+        wishlist = Wishlist.find(wishlist_id=1)
+        self.assertNotEqual(wishlist, None)
+        # delete the wishlist and make sure it isn't in the database
+        wishlist_obj.delete()
+        wishlist = Wishlist.find(wishlist_id=1)
+        self.assertEqual(wishlist, None)
+
     def test_serialize_an_item(self):
         """Test Serialize an Item """
         item = Item(product_name='laptop', product_id=1, wishlist_id=1)

@@ -173,9 +173,6 @@ def add_items_to_wishlist(wishlist_id):
                                   .format(new_item.wishlist_id, wishlist_id))
 
     wishlist = Wishlist.find_or_404(wishlist_id)
-
-
-
     wishlist.items.append(new_item)
 
     wishlist.save()
@@ -214,6 +211,24 @@ def get_item_from_wishlist(wishlist_id, item_id):
 
     message = get_item.serialize()
     return make_response(jsonify(message), status.HTTP_200_OK)
+
+
+######################################################################
+# DELETE A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
+def delete_wishlists(wishlist_id):
+    """
+    Delete a Wishlist
+    This endpoint will delete a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        wishlist.delete()
+
+    app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################
