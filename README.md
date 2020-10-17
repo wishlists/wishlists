@@ -19,6 +19,13 @@ Then all you have to do is clone this repo and invoke vagrant:
     
 You must pass the parameters -h 0.0.0.0 to have it listed on all network adapters to that the post can be forwarded by vagrant to your host computer so that you can open the web page in a local browser at: http://localhost:5000/wishlists
 
+### In case you already have a Vagrant VM
+    vagrant up
+    vagrant provision
+    vagrant ssh
+    cd /vagrant
+    FLASK_APP=service:app flask run -h 0.0.0.0
+
 ## Manually running the Tests
 
 Run the tests using `nose`
