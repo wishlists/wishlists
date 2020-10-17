@@ -177,7 +177,7 @@ class Wishlist(db.Model, PersistentBase):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63), nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
-    items = db.relationship('Item', backref='account', lazy=True)
+    items = db.relationship('Item', backref='wishlists', lazy=True)
 
     ##################################################
     # SERIALIZE
