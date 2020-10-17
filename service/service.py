@@ -148,10 +148,6 @@ def list_wishlists():
             abort(400, "The user_id should be an integer")
         wishlists = Wishlist.find_by_user_id(user_id)
     elif name:
-        try:
-            name = str(name)
-        except ValueError:
-            abort(400, "The name should be a string")
         wishlists = Wishlist.find_by_name(name)
     else:
         wishlists = Wishlist.all()

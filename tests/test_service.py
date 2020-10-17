@@ -172,6 +172,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(same_wishlist["user_id"], wishlist.user_id)
 
     def test_get_wishlist_list_by_user_id_wrong_data_type(self):
+        """ Test the case that a wrong data type of user_id is used """
         resp = self.app.get("/wishlists?user_id=\"1\"")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -197,6 +198,7 @@ class TestWishlistService(unittest.TestCase):
                                            " Wishlist '0' was not found."))
 
     def test_create_wishlist_with_missing_args(self):
+        """ Test the wishlist added has missing arguments """
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1
@@ -212,6 +214,7 @@ class TestWishlistService(unittest.TestCase):
                           ' body of request contained bad or no data'))
 
     def test_create_wishlist_with_unsupported_media_type(self):
+        """ Test the wishlist add request has unsupported media type """
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1,
@@ -359,7 +362,7 @@ class TestWishlistService(unittest.TestCase):
 
     @patch('service.service.Wishlist')
     def test_method_not_allowed(self, method_not_allowed_mock):
-        """ Test a METHOD_NOT_ALLOWED error from Find By Name """
+        """ Test 405_METHOD_NOT_ALLOWED error"""
         method_not_allowed_mock.side_effect = DataValidationError()
         test_wishlist = WishlistFactory()
         resp = self.app.put(
@@ -379,7 +382,7 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get('/wishlists/500')
         self.assertEqual(resp.status_code,
                          status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
     def test_delete_wishlist(self):
         """ Delete a non-existing Wishlist """
         test_wishlist = WishlistFactory()
