@@ -345,13 +345,15 @@ class TestWishlistService(unittest.TestCase):
         """ Delete a Wishlist """
         test_wishlist = self._create_wishlists(1)[0]
         resp = self.app.delete(
-            "/wishlists/{}".format(test_wishlist.id), content_type="application/json"
+            "/wishlists/{}".format(test_wishlist.id), 
+	    content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)
         # make sure they are deleted
         resp = self.app.get(
-            "/wishlists/{}".format(test_wishlist.id), content_type="application/json"
+            "/wishlists/{}".format(test_wishlist.id), 
+            content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 

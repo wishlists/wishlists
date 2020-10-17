@@ -226,7 +226,7 @@ def delete_wishlists(wishlist_id):
     This endpoint will delete a Wishlist based the id specified in the path
     """
     app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
-    wishlist = Wishlist.find_or_404(wishlist_id)
+    wishlist = Wishlist.find(wishlist_id)
     if wishlist:
         wishlist.delete()
 

@@ -67,6 +67,17 @@ class PersistentBase():
         """ Removes a Wishlist from the data store """
         db.session.delete(self)
         db.session.commit()
+    
+    @classmethod
+    def find(cls, wishlist_id: int):
+        """Finds a Pet by it's ID
+        :param wishlist_id: the id of the Pet to find
+        :type wishlist_id: int
+        :return: an instance with the wishlist_id, or None if not found
+        :rtype: class object
+        """
+        cls.logger.info("Processing lookup for id %s ...", wishlist_id)
+        return cls.query.get(wishlist_id)    
 
     @classmethod
     def find_or_404(cls, by_id: int):
