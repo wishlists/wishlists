@@ -343,10 +343,10 @@ class TestWishlistService(unittest.TestCase):
 
     def test_delete_wishlist(self):
         """ Delete a Wishlist """
-        test_wishlist = self._create_wishlists(1)[0]
+        test_wishlist = WishlistFactory()
         resp = self.app.delete(
             "/wishlists/{}".format(test_wishlist.id), 
-	    content_type="application/json"
+	        content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)
@@ -356,7 +356,6 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
 
 ######################################################################
 #   M A I N
