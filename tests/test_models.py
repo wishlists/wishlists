@@ -52,7 +52,7 @@ class TestModel(unittest.TestCase):
         """ Creates an account from a Factory """
         fake_wishlist = WishlistFactory()
         wishlist = Wishlist(
-            name=fake_wishlist.name, 
+            name=fake_wishlist.name,
             user_id=fake_wishlist.user_id,
             items=items
         )
@@ -80,10 +80,10 @@ class TestModel(unittest.TestCase):
         """ Create a wishlist and assert that it exists """
         fake_wishlist = WishlistFactory()
         wishlist = Wishlist(
-            name=fake_wishlist.name, 
+            name=fake_wishlist.name,
             user_id=fake_wishlist.user_id
         )
-        self.assertTrue(wishlist != None)
+        self.assertTrue(wishlist is not None)
         self.assertEqual(wishlist.id, None)
         self.assertEqual(wishlist.name, fake_wishlist.name)
         self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
@@ -128,14 +128,12 @@ class TestModel(unittest.TestCase):
         wishlists = Wishlist.all()
         self.assertEqual(len(wishlists), 1)
 
-        new_wishlist = Wishlist.find_or_404(wishlist.id)
         self.assertEqual(wishlist.items[0].product_name, item.product_name)
 
         item2 = self._create_item()
         wishlist.items.append(item2)
         wishlist.save()
 
-        new_wishlist = Wishlist.find_or_404(wishlist.id)
         self.assertEqual(len(wishlist.items), 2)
         self.assertEqual(wishlist.items[1].product_name, item2.product_name)
 
