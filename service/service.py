@@ -134,7 +134,6 @@ def index():
 ######################################################################
 # LIST ALL WISHLISTS
 ######################################################################
-@app.route("/wishlists", methods=["GET"])
 def list_wishlists():
     """ Returns all of the Wishlists """
     app.logger.info("Request for wishlist list")
@@ -142,8 +141,16 @@ def list_wishlists():
     user_id = request.args.get("user_id")
     name = request.args.get("name")
     if user_id:
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            abort(400, "The user_id should be an integer")
         wishlists = Wishlist.find_by_user_id(user_id)
     elif name:
+        try:
+            name = str(name)
+        except ValueError:
+            abort(400, "The name should be a string")
         wishlists = Wishlist.find_by_name(name)
     else:
         wishlists = Wishlist.all()
