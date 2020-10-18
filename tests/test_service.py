@@ -426,7 +426,7 @@ class TestWishlistService(unittest.TestCase):
         new_wishlist = resp.get_json()
         new_wishlist["name"] = "devops"
         resp = self.app.put(
-            "/wishlist/{}".format(new_wishlist["id"]),
+            "/wishlists/{}".format(new_wishlist["id"]),
             json=new_wishlist,
             content_type="application/json",
         )
@@ -437,19 +437,36 @@ class TestWishlistService(unittest.TestCase):
     def test_update_non_existing_wishlist(self):
         """ Update a non-existing Wishlist """
         test_wishlist = WishlistFactory()
-        resp = self.app.put(
-            "/wishlists/{}".format(test_wishlist.id),
-            content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(resp.data), 0)
         # make sure they are not in database
         resp = self.app.get(
             "/wishlists/{}".format(test_wishlist.id),
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        resp = self.app.put(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_update_wishlist_with_unsupported_media_type(self):
+        test_wishlist = self._create_wishlists(1)[0]
+        new_item = ItemFactory()
+        new_item.wishlist_id = test_wishlist.id
+
+        resp = self.app.put(
+            "/wishlists/{}".format(test_wishlist.id),
+            json=new_item.serialize(),
+            content_type="application/javascript"
+        )
+
+        self.assertEqual(resp.status_code,
+                         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        data = resp.get_json()
+        app_type = "application/json"
+        self.assertEqual(data["message"],
+                         "415 Unsupported Media Type: Content-Type must be {}"
+                         .format(app_type))
 
 ######################################################################
 #   M A I N
