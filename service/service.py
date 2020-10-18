@@ -277,6 +277,60 @@ def delete_wishlists(wishlist_id):
 
 
 ######################################################################
+# ENABLE ACTION ON A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/enabled", methods=["PUT"])
+def enable_wishlist(wishlist_id):
+    """
+    Enable a Wishlist
+    This endpoint will enable a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to enable wishlist with id: %s", wishlist_id)
+    check_content_type("application/json")
+    wishlist = Wishlist.find_or_404(wishlist_id)
+
+    wishlist.deserialize(request.get_json())
+    wishlist.id = wishlist_id
+    wishlist.status = True
+    wishlist.save()
+    message = wishlist.serialize()
+
+    location_url = url_for("get_wishlists",
+                           wishlist_id=wishlist.id, _external=True)
+    app.logger.info("Wishlist with ID [%s] enabled.", wishlist_id)
+    return make_response(
+        jsonify(message), status.HTTP_200_OK, {"Location": location_url}
+    )
+
+
+######################################################################
+# DISABLE ACTION ON A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/disabled", methods=["PUT"])
+def disable_wishlist(wishlist_id):
+    """
+    Disable a Wishlist
+    This endpoint will disable a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to disable wishlist with id: %s", wishlist_id)
+    check_content_type("application/json")
+    wishlist = Wishlist.find_or_404(wishlist_id)
+    
+    wishlist.deserialize(request.get_json())
+    wishlist.id = wishlist_id
+    wishlist.status = False
+    wishlist.save()
+    message = wishlist.serialize()
+
+    location_url = url_for("get_wishlists",
+                           wishlist_id=wishlist.id, _external=True)
+    app.logger.info("Wishlist with ID [%s] disabled.", wishlist_id)
+    return make_response(
+        jsonify(message), status.HTTP_200_OK, {"Location": location_url}
+    )
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 def init_db():
