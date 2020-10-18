@@ -56,8 +56,10 @@ class TestModel(unittest.TestCase):
 #  H E L P E R   M E T H O D S
 ######################################################################
 
-    def _create_wishlist(self, items=[]):
+    def _create_wishlist(self, items=None):
         """ Creates an account from a Factory """
+        if not items:
+            items = []
         fake_wishlist = WishlistFactory()
         wishlist = Wishlist(
             name=fake_wishlist.name,

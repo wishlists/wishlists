@@ -287,7 +287,7 @@ class TestWishlistService(unittest.TestCase):
     def test_get_item_not_found(self):
         """ Test get_item if item is not found """
 
-        wishlist, items = self._create_items(1)
+        wishlist = self._create_items(1)[0]
         resp = self.app.get(
             "/wishlists/{}/items/{}".format(wishlist.id, 55000),
             content_type="application/json"
