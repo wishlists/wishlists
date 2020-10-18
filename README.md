@@ -46,6 +46,8 @@ Then all you have to do is clone this repo and invoke vagrant:
 
  GET http://localhost:5000/wishlists/{wishlistId}/items/{item_id} - Get item by id from target wishlist 
  
+ GET http://localhost:5000/wishlists/{wishlistId}/items - Get items from target wishlist 
+ 
  ## Manually running the Tests
 
 Run the tests using `nose`
