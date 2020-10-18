@@ -172,6 +172,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(same_wishlist["user_id"], wishlist.user_id)
 
     def test_get_wishlist_list_by_user_id_wrong_data_type(self):
+        """ Test the case that a wrong data type of user_id is used """
         resp = self.app.get("/wishlists?user_id=\"1\"")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -197,6 +198,7 @@ class TestWishlistService(unittest.TestCase):
                                            " Wishlist '0' was not found."))
 
     def test_create_wishlist_with_missing_args(self):
+        """ Test the wishlist added has missing arguments """
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1
@@ -212,6 +214,7 @@ class TestWishlistService(unittest.TestCase):
                           ' body of request contained bad or no data'))
 
     def test_create_wishlist_with_unsupported_media_type(self):
+        """ Test the wishlist add request with unsupported media type """
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1,
@@ -284,7 +287,7 @@ class TestWishlistService(unittest.TestCase):
     def test_get_item_not_found(self):
         """ Test get_item if item is not found """
 
-        wishlist, items = self._create_items(1)
+        wishlist = self._create_items(1)[0]
         resp = self.app.get(
             "/wishlists/{}/items/{}".format(wishlist.id, 55000),
             content_type="application/json"
