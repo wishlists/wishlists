@@ -461,6 +461,86 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(data['message'], ("404 Not Found:"
                                            " Wishlist '0' was not found."))
 
+    def test_update_existing_wishlist(self):
+        """ Update an existing Wishlist """
+        # Create a wishlist to update
+        test_wishlist = WishlistFactory()
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Update the wishlist
+        new_wishlist = resp.get_json()
+        new_wishlist["name"] = "devops"
+        resp = self.app.put(
+            "/wishlists/{}".format(new_wishlist["id"]),
+            json=new_wishlist,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["name"], "devops")
+
+    def test_update_non_existing_wishlist(self):
+        """ Update a non-existing Wishlist """
+        test_wishlist = WishlistFactory()
+        # make sure they are not in database
+        resp = self.app.get(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        resp = self.app.put(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_wishlist_list_with_missing_parameters(self):
+        """ Update a Wishlist with missing parameters """
+        # Create a wishlist to update
+        test_wishlist = WishlistFactory()
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Update the wishlist
+        new_wishlist = resp.get_json()
+        missing_parameters_wishlist = {}
+        resp = self.app.put(
+            "/wishlists/{}".format(new_wishlist["id"]),
+            json=missing_parameters_wishlist,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        data = resp.get_json()
+        self.assertEqual(data['error'], "Bad Request")
+        self.assertEqual(data['message'],
+                         ('Invalid Wishlist: missing name'))
+
+    def test_update_wishlist_with_unsupported_media_type(self):
+        test_wishlist = self._create_wishlists(1)[0]
+        new_item = ItemFactory()
+        new_item.wishlist_id = test_wishlist.id
+
+        resp = self.app.put(
+            "/wishlists/{}".format(test_wishlist.id),
+            json=new_item.serialize(),
+            content_type="application/javascript"
+        )
+
+        self.assertEqual(resp.status_code,
+                         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        data = resp.get_json()
+        app_type = "application/json"
+        self.assertEqual(data["message"],
+                         "415 Unsupported Media Type: Content-Type must be {}"
+                         .format(app_type))
+
 
 ######################################################################
 #   M A I N
