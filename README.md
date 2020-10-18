@@ -13,11 +13,17 @@ Then all you have to do is clone this repo and invoke vagrant:
     git clone https://github.com/wishlists/wishlists
     cd wishlists
     vagrant up
+    vagrant ssh
+    cd /vagrant
+    FLASK_APP=service:app flask run -h 0.0.0.0
+    
+### In case you already have a Vagrant VM
+    vagrant up
     vagrant provision
     vagrant ssh
     cd /vagrant
     FLASK_APP=service:app flask run -h 0.0.0.0
-
+    
 ## Features supported
 
  GET http://localhost:5000/wishlists - Return all the wishlists 
@@ -39,8 +45,6 @@ Then all you have to do is clone this repo and invoke vagrant:
  POST http://localhost:5000/wishlists/{wishlistId}/items - Add item into target wishlist
 
  GET http://localhost:5000/wishlists/{wishlistId}/items/{item_id} - Get item by id from target wishlist 
- 
- GET http://localhost:5000/wishlists/{wishlistId}/items - Get items from target wishlist 
  
  ## Manually running the Tests
 
@@ -69,7 +73,6 @@ You can also manually run `nosetests` with `coverage` (but `setup.cfg` does this
 ## Running Pylint to check PEP8
 ```
 vagrant up
-vagrant provision
 vagrant ssh
 cd /vagrant
 pylint --rcfile=pylint.conf service/*.py
