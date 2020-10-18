@@ -412,6 +412,44 @@ class TestWishlistService(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_update_existing_wishlist(self):
+        """ Update an existing Wishlist """
+        # Create a wishlist to update
+        test_wishlist = WishlistFactory()
+        resp = self.app.post(
+            "/wishlists", json=test_wishlist.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Update the wishlist
+        new_wishlist = resp.get_json()
+        new_wishlist["name"] = "devops"
+        resp = self.app.put(
+            "/wishlist/{}".format(new_wishlist["id"]),
+            json=new_wishlist,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["name"], "devops")
+
+    def test_update_non_existing_wishlist(self):
+        """ Update a non-existing Wishlist """
+        test_wishlist = WishlistFactory()
+        resp = self.app.put(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)
+        # make sure they are not in database
+        resp = self.app.get(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
 
 ######################################################################
 #   M A I N

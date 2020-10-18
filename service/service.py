@@ -257,7 +257,6 @@ def get_item_from_wishlist(wishlist_id, item_id):
     message = get_item.serialize()
     return make_response(jsonify(message), status.HTTP_200_OK)
 
-
 ######################################################################
 # DELETE A WISHLIST
 ######################################################################
@@ -275,6 +274,25 @@ def delete_wishlists(wishlist_id):
     app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
+######################################################################
+# UPDATE A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>", methods=["PUT"])
+def update_wishlists(wishlist_id):
+    """
+    Update a Wishlist
+    This endpoint will update a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to update wishlist with id: %s", wishlist_id)
+    check_content_type("application/json")
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        raise NotFound("Wishlist with id '{}' was not found.".format(wishlist_id))
+    wishlist.deserialize(request.get_json())
+    wishlist.id = wishlist_id
+    wishlist.save()
+    app.logger.info("Wishlist with ID [%s] updated.", wishlist_id)
+    return make_response("", status.HTTP_200_OK)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
