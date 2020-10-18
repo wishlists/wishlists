@@ -523,6 +523,7 @@ class TestWishlistService(unittest.TestCase):
                          ('Invalid Wishlist: missing name'))
 
     def test_update_wishlist_with_unsupported_media_type(self):
+        """ Update a Wishlist with unsupported media type """
         test_wishlist = self._create_wishlists(1)[0]
         new_item = ItemFactory()
         new_item.wishlist_id = test_wishlist.id
