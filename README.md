@@ -13,12 +13,6 @@ Then all you have to do is clone this repo and invoke vagrant:
     git clone https://github.com/wishlists/wishlists
     cd wishlists
     vagrant up
-    vagrant ssh
-    cd /vagrant
-    FLASK_APP=service:app flask run -h 0.0.0.0
-    
-### In case you already have a Vagrant VM
-    vagrant up
     vagrant provision
     vagrant ssh
     cd /vagrant
@@ -73,6 +67,7 @@ You can also manually run `nosetests` with `coverage` (but `setup.cfg` does this
 ## Running Pylint to check PEP8
 ```
 vagrant up
+vagrant provision
 vagrant ssh
 cd /vagrant
 pylint --rcfile=pylint.conf service/*.py
