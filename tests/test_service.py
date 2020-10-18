@@ -284,7 +284,7 @@ class TestWishlistService(unittest.TestCase):
     def test_get_item_not_found(self):
         """ Test get_item if item is not found """
 
-        wishlist, items = self._create_items(1)
+        wishlist,items = self._create_items(1)
         resp = self.app.get(
             "/wishlists/{}/items/{}".format(wishlist.id, 55000),
             content_type="application/json"
@@ -379,7 +379,7 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get('/wishlists/500')
         self.assertEqual(resp.status_code,
                          status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
     def test_delete_wishlist(self):
         """ Delete a non-existing Wishlist """
         test_wishlist = WishlistFactory()
@@ -411,6 +411,52 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_items_from_wishlist(self):
+        """ Get a list of Addresses """
+        test_wishlist = self._create_wishlists(1)[0]
+        # # create item 1
+        new_item_1 = ItemFactory()
+        new_item_1.wishlist_id = test_wishlist.id
+
+        resp = self.app.post(
+            "/wishlists/{}/items".format(test_wishlist.id),
+            json=new_item_1.serialize(),
+            content_type="application/json"
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # # create item 2
+        new_item_2 = ItemFactory()
+        new_item_2.wishlist_id = test_wishlist.id
+
+        resp = self.app.post(
+            "/wishlists/{}/items".format(test_wishlist.id),
+            json=new_item_2.serialize(),
+            content_type="application/json"
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # get the list back and make sure there are 2
+        resp = self.app.get(
+            "/wishlists/{}/items".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+
+    def test_get_items_from_nonexistent_wishlist(self):
+        """ Get a wishlist thats not found """
+        resp = self.app.get("/wishlists/0/items")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data['error'], "Not Found")
+        self.assertEqual(data['message'], ("404 Not Found:"
+                                           " Wishlist '0' was not found."))
 
 
 ######################################################################
