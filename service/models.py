@@ -181,12 +181,12 @@ class Wishlist(db.Model, PersistentBase):
     app = None
 
     def __repr__(self):
-        return "<Wishlist %r user_id=[%s] items[%s]>" % (
-            self.name, self.user_id, self.items)
+        return "<Wishlist %r user_id=[%s] items[%s] status=[%s]>" % (
+            self.name, self.user_id, self.items, self.status)
 
     def __str__(self):
-        return "%s: id: %s, user_id: %s, items: %s" % (
-            self.name, self.id, self.user_id, str(self.items))
+        return "%s: id: %s, user_id: %s, items: %s, status: %s" % (
+            self.name, self.id, self.user_id, str(self.items), self.status)
 
     ##################################################
     # Table Schema
@@ -198,7 +198,7 @@ class Wishlist(db.Model, PersistentBase):
     items = db.relationship('Item', backref='wishlist',
                             cascade="all,delete",
                             lazy=True)
-
+    status = db.Column(db.Boolean, default=True, nullable=False)
 
     ##################################################
     # INSTANCE METHODS
@@ -209,7 +209,8 @@ class Wishlist(db.Model, PersistentBase):
             "id": self.id,
             "name": self.name,
             "user_id": self.user_id,
-            "items": []
+            "items": [],
+            "status": self.status
         }
 
         for item in self.items:
@@ -231,6 +232,7 @@ class Wishlist(db.Model, PersistentBase):
         try:
             self.name = data["name"]
             self.user_id = data["user_id"]
+            self.status = data["status"]
             item_list = data.get("items")
             for json_item in item_list:
                 item = Item()
