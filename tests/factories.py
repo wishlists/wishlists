@@ -10,6 +10,7 @@ class WishlistFactory(factory.Factory):
     """ Creates fake wishlist that you don't have to feed """
 
     class Meta:
+        """ Class that defines meta data """
         model = Wishlist
 
     id = factory.Sequence(lambda n: n)
@@ -21,6 +22,7 @@ class ItemFactory(factory.Factory):
     """ Creates fake item that you don't have to feed """
 
     class Meta:
+        """ Class that defines meta data """
         model = Item
 
     id = factory.Sequence(lambda n: n)
