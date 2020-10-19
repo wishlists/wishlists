@@ -27,7 +27,7 @@ from unittest.mock import patch
 from flask import abort
 from flask_api import status  # HTTP Status Codes
 from service.models import db, DataValidationError
-from service.service import app, init_db, Wishlist
+from service.service import app, init_db
 from .factories import WishlistFactory, ItemFactory
 
 DATABASE_URI = os.getenv("DATABASE_URI",
@@ -483,8 +483,6 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data["name"], new_wishlist.name)
-
-
 
     def test_update_non_existing_wishlist(self):
         """ Update a non-existing Wishlist """
