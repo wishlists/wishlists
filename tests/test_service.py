@@ -27,7 +27,7 @@ from unittest.mock import patch
 from flask import abort
 from flask_api import status  # HTTP Status Codes
 from service.models import db, DataValidationError
-from service.service import app, init_db
+from service.service import app, init_db, Wishlist
 from .factories import WishlistFactory, ItemFactory
 
 DATABASE_URI = os.getenv("DATABASE_URI",
@@ -462,24 +462,29 @@ class TestWishlistService(unittest.TestCase):
     def test_update_existing_wishlist(self):
         """ Update an existing Wishlist """
         # Create a wishlist to update
-        test_wishlist = WishlistFactory()
-        resp = self.app.post(
-            "/wishlists", json=test_wishlist.serialize(),
-            content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        test_wishlist = self._create_wishlists(1)[0]
 
         # Update the wishlist
-        new_wishlist = resp.get_json()
-        new_wishlist["name"] = "devops"
+        new_wishlist = test_wishlist
+        new_wishlist.name = "devops"
         resp = self.app.put(
-            "/wishlists/{}".format(new_wishlist["id"]),
-            json=new_wishlist,
+            "/wishlists/{}".format(test_wishlist.id),
+            json=new_wishlist.serialize(),
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_wishlist = resp.get_json()
-        self.assertEqual(updated_wishlist["name"], "devops")
+        self.assertEqual(updated_wishlist["name"], new_wishlist.name)
+
+        resp = self.app.get(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["name"], new_wishlist.name)
+
+
 
     def test_update_non_existing_wishlist(self):
         """ Update a non-existing Wishlist """
