@@ -22,8 +22,8 @@ GET /wishlists/{id} - Returns the wishlist with a given id number
 POST /wishlists - creates a new wishlist record in the database
 PUT /wishlists/{id} - updates a wishlist record in the database
 DELETE /wishlists/{id} - deletes a wishlist record in the database
-ACTION /wishlists/{id}/enabled - enables a wishlist record in the database
-ACTION /wishlists/{id}/disabled - disables a wishlist record in the database
+PUT /wishlists/{id}/enabled - enables a wishlist record in the database
+PUT /wishlists/{id}/disabled - disables a wishlist record in the database
 """
 
 from flask import jsonify, request, url_for, make_response, abort
