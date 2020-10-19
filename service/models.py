@@ -60,7 +60,7 @@ class PersistentBase():
         """
         Updates a record to the database
         """
-        logger.info("Saving %s", self.name)
+        # logger.info("Saving %s", self.name)
         db.session.commit()
 
     def delete(self):
@@ -117,6 +117,7 @@ class Item(db.Model, PersistentBase):
 
     logger = logging.getLogger(__name__)
     app = None
+    name = "Item"
 
     ##################################################
     # Table Schema
@@ -199,12 +200,13 @@ class Wishlist(db.Model, PersistentBase):
                             cascade="all,delete",
                             lazy=True)
 
-
     ##################################################
     # INSTANCE METHODS
     ##################################################
     def serialize(self):
-        """ Serializes a Wishlist into a dictionary """
+        """
+        Serializes a Wishlist into a dictionary
+        """
         wishlist = {
             "id": self.id,
             "name": self.name,
@@ -231,11 +233,6 @@ class Wishlist(db.Model, PersistentBase):
         try:
             self.name = data["name"]
             self.user_id = data["user_id"]
-            item_list = data.get("items")
-            for json_item in item_list:
-                item = Item()
-                item.deserialize(json_item)
-                self.items.append(item)
         except KeyError as error:
             raise DataValidationError("Invalid Wishlist: missing " +
                                       error.args[0])

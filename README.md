@@ -26,25 +26,29 @@ Then all you have to do is clone this repo and invoke vagrant:
     
 ## Features supported
 
- GET http://localhost:5000/wishlists - Return all the wishlists 
+ GET /wishlists - Return all the wishlists 
  
- GET http://localhost:5000/wishlists/{wishlistID} - Return the wishlists with the given id  
+ GET /wishlists/{wishlistID} - Return the wishlists with the given id  
  
- POST http://localhost:5000/wishlists - Create a new wishlist record in the database  
+ POST /wishlists - Create a new wishlist record in the database  
 
- PUT http://localhost:5000/wishlists/{wishlistID} - Update a wishlist record in the database  
+ PUT /wishlists/{wishlistID} - Update a wishlist record in the database  
  
- DELETE http://localhost:5000/wishlists/{wishlistID} - Delete a wishlist record in the database  
+ DELETE /wishlists/{wishlistID} - Delete a wishlist record in the database  
  
- GET http://localhost:5000/wishlists?name="wishlist_1" - Query the database by the name of the wishlist   
+ GET /wishlists?name="wishlist_1" - Query the database by the name of the wishlist   
 
- PUT http://localhost:5000/wishlists/{wishlistId}/disabled - It disables the target wishlist
+ PUT /wishlists/{wishlistId}/disabled - It disables the target wishlist
  
- PUT http://localhost:5000/wishlists/{wishlistId}/enabled - It enables the target wishlist
+ PUT /wishlists/{wishlistId}/enabled - It enables the target wishlist
  
- POST http://localhost:5000/wishlists/{wishlistId}/items - Add item into target wishlist
+ POST /wishlists/{wishlistId}/items - Add item into target wishlist
 
- GET http://localhost:5000/wishlists/{wishlistId}/items/{item_id} - Get item by id from target wishlist 
+ GET /wishlists/{wishlistId}/items/{item_id} - Get item by id from target wishlist 
+ 
+ PUT /wishlists/{wishlist_id} - Updates an existing wishlist
+ 
+ PUT /wishlists/{wishlist_id}/items/{item_id} - Updates an existing item in the target wishlist
  
  ## Manually running the Tests
 

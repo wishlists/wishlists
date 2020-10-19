@@ -10,6 +10,7 @@ from tests.factories import WishlistFactory, ItemFactory
 DATABASE_URI = os.getenv("DATABASE_URI",
                          "postgres://postgres:postgres@localhost:5432/testdb")
 
+
 ######################################################################
 #  M O D E L   T E S T   C A S E S
 ######################################################################
@@ -44,10 +45,9 @@ class TestModel(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
-######################################################################
-#  H E L P E R   M E T H O D S
-######################################################################
-
+    ######################################################################
+    #  H E L P E R   M E T H O D S
+    ######################################################################
 
     def _create_wishlist(self, items=[]):
         """ Creates an account from a Factory """
@@ -73,10 +73,9 @@ class TestModel(unittest.TestCase):
         self.assertEqual(item.id, None)
         return item
 
-######################################################################
-#  T E S T   C A S E S
-######################################################################
-
+    ######################################################################
+    #  T E S T   C A S E S
+    ######################################################################
 
     def test_create_a_wishlist(self):
         """ Create a wishlist and assert that it exists """
@@ -158,7 +157,7 @@ class TestModel(unittest.TestCase):
         # Fetch it back by name
         same_wishlist = Wishlist.find_by_name(wishlist.name)[0]
         self.assertEqual(same_wishlist.id, wishlist.id)
-        self.assertEqual(same_wishlist.name, wishlist.name) 
+        self.assertEqual(same_wishlist.name, wishlist.name)
 
     def test_find_by_user_id(self):
         """ Find by user id"""
