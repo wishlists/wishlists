@@ -1,5 +1,13 @@
 # Created by gupta at 10-10-2020
 
+"""
+Wishlist and Item Model Test Suite
+Test cases can be run with the following:
+  nosetests -v --with-spec --spec-color
+  coverage report -m
+  codecov --token=$CODECOV_TOKEN
+"""
+
 import unittest
 import logging
 import os
@@ -48,9 +56,10 @@ class TestModel(unittest.TestCase):
 #  H E L P E R   M E T H O D S
 ######################################################################
 
-
-    def _create_wishlist(self, items=[]):
+    def _create_wishlist(self, items=None):
         """ Creates an account from a Factory """
+        if not items:
+            items = []
         fake_wishlist = WishlistFactory()
         wishlist = Wishlist(
             name=fake_wishlist.name,
@@ -76,7 +85,6 @@ class TestModel(unittest.TestCase):
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
-
 
     def test_create_a_wishlist(self):
         """ Create a wishlist and assert that it exists """
@@ -158,7 +166,7 @@ class TestModel(unittest.TestCase):
         # Fetch it back by name
         same_wishlist = Wishlist.find_by_name(wishlist.name)[0]
         self.assertEqual(same_wishlist.id, wishlist.id)
-        self.assertEqual(same_wishlist.name, wishlist.name) 
+        self.assertEqual(same_wishlist.name, wishlist.name)
 
     def test_find_by_user_id(self):
         """ Find by user id"""

@@ -148,10 +148,6 @@ def list_wishlists():
             abort(400, "The user_id should be an integer")
         wishlists = Wishlist.find_by_user_id(user_id)
     elif name:
-        try:
-            name = str(name)
-        except ValueError:
-            abort(400, "The name should be a string")
         wishlists = Wishlist.find_by_name(name)
     else:
         wishlists = Wishlist.all()
@@ -256,6 +252,19 @@ def get_item_from_wishlist(wishlist_id, item_id):
 
     message = get_item.serialize()
     return make_response(jsonify(message), status.HTTP_200_OK)
+
+
+######################################################################
+# LIST ITEMS FROM WISHLISTS
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/items", methods=["GET"])
+def list_items_in_wishlist(wishlist_id):
+    """ Returns all of the items for a wishlist """
+    app.logger.info("Request for items in the wishlist...")
+    wishlist = Wishlist.find_or_404(wishlist_id)
+    results = [item.serialize() for item in wishlist.items]
+    return make_response(jsonify(results), status.HTTP_200_OK)
+
 
 ######################################################################
 # DELETE A WISHLIST
