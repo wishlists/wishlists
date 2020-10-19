@@ -56,7 +56,6 @@ class TestModel(unittest.TestCase):
 #  H E L P E R   M E T H O D S
 ######################################################################
 
-
     def _create_wishlist(self, items=None):
         """ Creates an account from a Factory """
         if not items:
@@ -86,7 +85,6 @@ class TestModel(unittest.TestCase):
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
-
 
     def test_create_a_wishlist(self):
         """ Create a wishlist and assert that it exists """
