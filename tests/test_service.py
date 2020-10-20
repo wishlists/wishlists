@@ -580,6 +580,7 @@ class TestWishlistService(unittest.TestCase):
             "/wishlists/{}/enabled".format(test_wishlist.id),
             json=test_wishlist.serialize(),
             content_type="application/json",
+        )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
         self.assertEqual(data["message"],
@@ -653,7 +654,7 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["message"],
                          "404 Not Found: Wishlist '{}' was not found."
-                         .format(15))
+                         .format(wishlist.id))
 
     def test_delete_item_if_item_not_found(self):
         """ Test delete_item if item is not found """
@@ -667,7 +668,7 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["message"],
                          "404 Not Found: Item with id '{}' was not found."
-                         .format(7))
+                         .format(item.id))
 
 ######################################################################
 #   M A I N
