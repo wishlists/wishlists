@@ -41,7 +41,6 @@ Then all you have to do is clone this repo and invoke vagrant:
  
  PUT /wishlists/{wishlist_id} - Updates an existing wishlist
  
- PUT /wishlists/{wishlist_id}/items/{item_id} - Updates an existing item in the target wishlist
  
  ## Manually running the Tests
 
