@@ -140,7 +140,6 @@ def index():
 def list_wishlists():
     """ Returns all of the Wishlists """
     app.logger.info("Request for wishlist list")
-    wishlists = []
     if request.args:
         user_id = request.args.get("user_id")
         name = request.args.get("name")
@@ -161,7 +160,6 @@ def list_wishlists():
     results = [wishlist.serialize() for wishlist in wishlists]
     app.logger.info("Returning %d wishlists", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
-
 
 ######################################################################
 # RETRIEVE A WISHLIST
@@ -190,6 +188,18 @@ def create_wishlists():
     check_content_type("application/json")
     wishlist = Wishlist()
     wishlist.deserialize(request.get_json())
+    data = request.get_json()
+
+    try:
+        items = []
+        for item in data["items"]:
+            new_item = Item()
+            items.append(new_item.deserialize(item))
+        wishlist.items = items
+    except KeyError as error:
+        raise DataValidationError("Invalid Wishlist: missing " +
+                                  error.args[0])
+
     wishlist.create()
     message = wishlist.serialize()
     location_url = url_for("get_wishlists",
@@ -290,7 +300,6 @@ def delete_wishlists(wishlist_id):
     app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
-
 ######################################################################
 # UPDATE A WISHLIST
 ######################################################################
@@ -309,7 +318,6 @@ def update_wishlists(wishlist_id):
     message = wishlist.serialize()
     app.logger.info("Wishlist with ID [%s] updated.", wishlist_id)
     return make_response(jsonify(message), status.HTTP_200_OK)
-
 
 ######################################################################
 # ENABLE ACTION ON A WISHLIST

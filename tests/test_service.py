@@ -112,9 +112,26 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["name"], "Wishlist Demo REST API Service")
 
+    def test_create_wishlist_bad_data(self):
+        """Test create wishlist """
+
+        test_wishlist = {"name": "abc",
+                         "user_id": 123}
+
+        resp = self.app.post(
+            "/wishlists",
+            json=test_wishlist,
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        data = resp.get_json()
+        self.assertEqual(data["message"], "Invalid Wishlist: missing items")
+
     def test_create_wishlist(self):
         """ Create a new wishlist """
         test_wishlist = WishlistFactory()
+        item = ItemFactory()
+        test_wishlist.items.append(item)
         resp = self.app.post(
             "/wishlists",
             json=test_wishlist.serialize(),
@@ -132,6 +149,11 @@ class TestWishlistService(unittest.TestCase):
             new_wishlist["user_id"], test_wishlist.user_id,
             "User id do not match"
         )
+        items = new_wishlist["items"][0]
+        self.assertEqual(items["product_name"]
+                         , item.product_name,
+                         "item product_name do not match"
+                         )
         # Check that the location header was correct
         resp = self.app.get(location, content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -205,8 +227,7 @@ class TestWishlistService(unittest.TestCase):
     def test_create_wishlist_with_missing_args(self):
         """ Test the wishlist added has missing arguments """
         test_wishlist = {
-            "name": "wishlist1",
-            "user_id": 1
+            "name": "wishlist1"
         }
         resp = self.app.post(
             "/wishlists", json=test_wishlist, content_type="application/json"
@@ -215,8 +236,7 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data['error'], "Bad Request")
         self.assertEqual(data['message'],
-                         ('Invalid Wishlist:'
-                          ' body of request contained bad or no data'))
+                         'Invalid Wishlist: missing user_id')
 
     def test_create_wishlist_with_unsupported_media_type(self):
         """ Test the wishlist add request with unsupported media type """
@@ -469,24 +489,27 @@ class TestWishlistService(unittest.TestCase):
     def test_update_existing_wishlist(self):
         """ Update an existing Wishlist """
         # Create a wishlist to update
-        test_wishlist = WishlistFactory()
-        resp = self.app.post(
-            "/wishlists", json=test_wishlist.serialize(),
-            content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        test_wishlist = self._create_wishlists(1)[0]
 
         # Update the wishlist
-        new_wishlist = resp.get_json()
-        new_wishlist["name"] = "devops"
+        new_wishlist = test_wishlist
+        new_wishlist.name = "devops"
         resp = self.app.put(
-            "/wishlists/{}".format(new_wishlist["id"]),
-            json=new_wishlist,
+            "/wishlists/{}".format(test_wishlist.id),
+            json=new_wishlist.serialize(),
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_wishlist = resp.get_json()
-        self.assertEqual(updated_wishlist["name"], "devops")
+        self.assertEqual(updated_wishlist["name"], new_wishlist.name)
+
+        resp = self.app.get(
+            "/wishlists/{}".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["name"], new_wishlist.name)
 
     def test_update_non_existing_wishlist(self):
         """ Update a non-existing Wishlist """
@@ -525,7 +548,7 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data['error'], "Bad Request")
         self.assertEqual(data['message'],
-                         ('Invalid Wishlist: missing name'))
+                         'Invalid Wishlist: missing name')
 
     def test_update_wishlist_with_unsupported_media_type(self):
         """ Update a Wishlist with unsupported media type """

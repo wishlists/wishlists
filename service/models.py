@@ -204,7 +204,9 @@ class Wishlist(db.Model, PersistentBase):
     # INSTANCE METHODS
     ##################################################
     def serialize(self):
-        """ Serializes a Wishlist into a dictionary """
+        """
+        Serializes a Wishlist into a dictionary
+        """
         wishlist = {
             "id": self.id,
             "name": self.name,
@@ -232,11 +234,6 @@ class Wishlist(db.Model, PersistentBase):
         try:
             self.name = data["name"]
             self.user_id = data["user_id"]
-            item_list = data.get("items")
-            for json_item in item_list:
-                item = Item()
-                item.deserialize(json_item)
-                self.items.append(item)
         except KeyError as error:
             raise DataValidationError("Invalid Wishlist: missing " +
                                       error.args[0])
