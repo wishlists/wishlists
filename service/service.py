@@ -295,8 +295,7 @@ def delete_item_from_wishlist(wishlist_id, item_id):
 
     get_item.delete()
     app.logger.info("Item with ID [%s] was deleted.", wishlist_id)
-    message = wishlist.serialize()
-    return make_response(jsonify(message), status.HTTP_200_OK)
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 ######################################################################
 # DELETE A WISHLIST
