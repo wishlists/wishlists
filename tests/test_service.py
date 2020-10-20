@@ -172,7 +172,13 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(same_wishlist["user_id"], wishlist.user_id)
 
     def test_get_wishlist_list_by_user_id_wrong_data_type(self):
+        """ Query a list of wishlists using argument with wrong data type """
         resp = self.app.get("/wishlists?user_id=\"1\"")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_wishlist_list_by_nonexist_args(self):
+        """ Query a list of wishlists using nonexist argument"""
+        resp = self.app.get("/wishlists?length=20")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_wishlist(self):
@@ -197,6 +203,7 @@ class TestWishlistService(unittest.TestCase):
                                            " Wishlist '0' was not found."))
 
     def test_create_wishlist_with_missing_args(self):
+        """ Test the wishlist added has missing arguments """
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1
@@ -212,6 +219,7 @@ class TestWishlistService(unittest.TestCase):
                           ' body of request contained bad or no data'))
 
     def test_create_wishlist_with_unsupported_media_type(self):
+        """ Test the wishlist add request with unsupported media type """
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1,
@@ -284,7 +292,7 @@ class TestWishlistService(unittest.TestCase):
     def test_get_item_not_found(self):
         """ Test get_item if item is not found """
 
-        wishlist, items = self._create_items(1)
+        wishlist = self._create_items(1)[0]
         resp = self.app.get(
             "/wishlists/{}/items/{}".format(wishlist.id, 55000),
             content_type="application/json"
@@ -357,7 +365,7 @@ class TestWishlistService(unittest.TestCase):
                          .format(item.wishlist_id,
                                  test_wishlist.id))
 
-    @patch('service.service.Wishlist')
+    @patch('service.service')
     def test_method_not_allowed(self, method_not_allowed_mock):
         """ Test a METHOD_NOT_ALLOWED error from Find By Name """
         method_not_allowed_mock.side_effect = DataValidationError()
@@ -379,7 +387,7 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get('/wishlists/500')
         self.assertEqual(resp.status_code,
                          status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
     def test_delete_wishlist(self):
         """ Delete a non-existing Wishlist """
         test_wishlist = WishlistFactory()
@@ -411,6 +419,52 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_items_from_wishlist(self):
+        """ Get a list of Addresses """
+        test_wishlist = self._create_wishlists(1)[0]
+        # # create item 1
+        new_item_1 = ItemFactory()
+        new_item_1.wishlist_id = test_wishlist.id
+
+        resp = self.app.post(
+            "/wishlists/{}/items".format(test_wishlist.id),
+            json=new_item_1.serialize(),
+            content_type="application/json"
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # # create item 2
+        new_item_2 = ItemFactory()
+        new_item_2.wishlist_id = test_wishlist.id
+
+        resp = self.app.post(
+            "/wishlists/{}/items".format(test_wishlist.id),
+            json=new_item_2.serialize(),
+            content_type="application/json"
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # get the list back and make sure there are 2
+        resp = self.app.get(
+            "/wishlists/{}/items".format(test_wishlist.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        data = resp.get_json()
+        self.assertEqual(len(data), 2)
+
+    def test_get_items_from_nonexistent_wishlist(self):
+        """ Get a wishlist thats not found """
+        resp = self.app.get("/wishlists/0/items")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data['error'], "Not Found")
+        self.assertEqual(data['message'], ("404 Not Found:"
+                                           " Wishlist '0' was not found."))
 
     def test_update_existing_wishlist(self):
         """ Update an existing Wishlist """
@@ -474,6 +528,7 @@ class TestWishlistService(unittest.TestCase):
                          ('Invalid Wishlist: missing name'))
 
     def test_update_wishlist_with_unsupported_media_type(self):
+        """ Update a Wishlist with unsupported media type """
         test_wishlist = self._create_wishlists(1)[0]
         new_item = ItemFactory()
         new_item.wishlist_id = test_wishlist.id
@@ -491,6 +546,74 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(data["message"],
                          "415 Unsupported Media Type: Content-Type must be {}"
                          .format(app_type))
+
+    def test_enable_existing_wishlist(self):
+        """ Enable an existing Wishlist """
+        test_wishlist = self._create_wishlists(1)[0]
+        # disable the wishlist first because the default is enabled
+        resp = self.app.put(
+            "/wishlists/{}/disabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Check that the status is correct
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["status"], False)
+
+        # enable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/enabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Check that the status is correct
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["status"], True)
+
+    def test_enable_wishlist(self):
+        """ Enable a non-existing Wishlist """
+        test_wishlist = WishlistFactory()
+        # enable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/enabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["message"],
+                         "404 Not Found: Wishlist '{}' was not found."
+                         .format(test_wishlist.id))
+
+    def test_disable_existing_wishlist(self):
+        """ Disable an existing Wishlist """
+        test_wishlist = self._create_wishlists(1)[0]
+        # disable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/disabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Check that the status is correct
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["status"], False)
+
+    def test_disable_wishlist(self):
+        """ Disable a non-existing Wishlist """
+        test_wishlist = WishlistFactory()
+        # disable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/disabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["message"],
+                         "404 Not Found: Wishlist '{}' was not found."
+                         .format(test_wishlist.id))
 
     def test_delete_item_from_wishlist(self):
         """ Delete a single item """

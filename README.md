@@ -13,12 +13,6 @@ Then all you have to do is clone this repo and invoke vagrant:
     git clone https://github.com/wishlists/wishlists
     cd wishlists
     vagrant up
-    vagrant ssh
-    cd /vagrant
-    FLASK_APP=service:app flask run -h 0.0.0.0
-    
-### In case you already have a Vagrant VM
-    vagrant up
     vagrant provision
     vagrant ssh
     cd /vagrant
@@ -36,7 +30,7 @@ Then all you have to do is clone this repo and invoke vagrant:
  
  DELETE http://localhost:5000/wishlists/{wishlistID} - Delete a wishlist record in the database  
  
- GET http://localhost:5000/wishlists?name="wishlist_1" - Query the database by the name of the wishlist   
+ GET http://localhost:5000/wishlists?name=wishlist_1 - Query the database by the name of the wishlist   
 
  PUT http://localhost:5000/wishlists/{wishlistId}/disabled - It disables the target wishlist
  
