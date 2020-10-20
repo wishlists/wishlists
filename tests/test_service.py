@@ -636,7 +636,7 @@ class TestWishlistService(unittest.TestCase):
     def test_delete_item_if_wishlist_not_found(self):
         """ Test delete_item if wishlist is not found """
         wishlist = WishlistFactory()
-        item = ItemFactory() 
+        item = ItemFactory()
         resp = self.app.delete(
             "/wishlists/{}/items/{}".format(wishlist.id, item.id),
             content_type="application/json"
@@ -650,7 +650,7 @@ class TestWishlistService(unittest.TestCase):
     def test_delete_item_if_item_not_found(self):
         """ Test delete_item if item is not found """
         wishlist, items = self._create_items(1)
-        item = ItemFactory() 
+        item = ItemFactory()
         resp = self.app.delete(
             "/wishlists/{}/items/{}".format(wishlist.id, item.id),
             content_type="application/json"

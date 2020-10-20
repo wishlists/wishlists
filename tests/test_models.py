@@ -265,7 +265,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(new_wishlist.id, None)
         self.assertEqual(new_wishlist.name, wishlist_obj.name)
         self.assertEqual(new_wishlist.user_id, wishlist_obj.user_id)
-  
+
     def test_wishlist_deserialize_type_error(self):
         """ Test deserialization of type error for Wishlist"""
         data = "this is not a dictionary"
