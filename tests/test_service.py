@@ -367,7 +367,7 @@ class TestWishlistService(unittest.TestCase):
                          .format(item.wishlist_id,
                                  test_wishlist.id))
 
-    @patch('service.service.Wishlist')
+    @patch('service.service')
     def test_method_not_allowed(self, method_not_allowed_mock):
         """ Test a METHOD_NOT_ALLOWED error from Find By Name """
         method_not_allowed_mock.side_effect = DataValidationError()

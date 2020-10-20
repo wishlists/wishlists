@@ -151,6 +151,7 @@ def list_wishlists():
                 raise DataValidationError("user_id should be an integer")
             wishlists = Wishlist.find_by_user_id(user_id)
         elif name:
+            name = name.strip("\"\'")
             wishlists = Wishlist.find_by_name(name)
         else:
             raise DataValidationError("query parameter does not exist")
