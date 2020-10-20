@@ -621,23 +621,14 @@ class TestWishlistService(unittest.TestCase):
         # create a wishlist with item
         wishlist, items = self._create_items(1)
         item = items[0]
-        wishlist_id = wishlist.id
-        item_id = item.id
-        resp = self.app.get(
-            "/wishlists/{}/items/{}".format(wishlist_id, item_id),
+        resp = self.app.delete(
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
             content_type="application/json"
         )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(data["product_name"], item.product_name)
-        resp = self.app.put(
-            "/wishlists/{}/items/{}".format(wishlist_id, item_id),
-            content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         # make sure it's deleted
         resp = self.app.get(
-            "/wishlists/{}/items/{}".format(wishlist_id, item_id),
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
@@ -646,7 +637,7 @@ class TestWishlistService(unittest.TestCase):
         """ Test delete_item if wishlist is not found """
         wishlist = WishlistFactory()
         item = ItemFactory() 
-        resp = self.app.put(
+        resp = self.app.delete(
             "/wishlists/{}/items/{}".format(wishlist.id, item.id),
             content_type="application/json"
         )
@@ -660,7 +651,7 @@ class TestWishlistService(unittest.TestCase):
         """ Test delete_item if item is not found """
         wishlist, items = self._create_items(1)
         item = ItemFactory() 
-        resp = self.app.put(
+        resp = self.app.delete(
             "/wishlists/{}/items/{}".format(wishlist.id, item.id),
             content_type="application/json"
         )
