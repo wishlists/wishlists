@@ -172,8 +172,13 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(same_wishlist["user_id"], wishlist.user_id)
 
     def test_get_wishlist_list_by_user_id_wrong_data_type(self):
-        """ Test the case that a wrong data type of user_id is used """
+        """ Query a list of wishlists using argument with wrong data type """
         resp = self.app.get("/wishlists?user_id=\"1\"")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_wishlist_list_by_nonexist_args(self):
+        """ Query a list of wishlists using nonexist argument"""
+        resp = self.app.get("/wishlists?length=20")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_wishlist(self):
@@ -358,7 +363,7 @@ class TestWishlistService(unittest.TestCase):
                          .format(item.wishlist_id,
                                  test_wishlist.id))
 
-    @patch('service.service.Wishlist')
+    @patch('service.service')
     def test_method_not_allowed(self, method_not_allowed_mock):
         """ Test a METHOD_NOT_ALLOWED error from Find By Name """
         method_not_allowed_mock.side_effect = DataValidationError()
@@ -542,6 +547,75 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(data["message"],
                          "415 Unsupported Media Type: Content-Type must be {}"
                          .format(app_type))
+
+    def test_enable_existing_wishlist(self):
+        """ Enable an existing Wishlist """
+        test_wishlist = self._create_wishlists(1)[0]
+        # disable the wishlist first because the default is enabled
+        resp = self.app.put(
+            "/wishlists/{}/disabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Check that the status is correct
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["status"], False)
+
+        # enable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/enabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Check that the status is correct
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["status"], True)
+
+    def test_enable_wishlist(self):
+        """ Enable a non-existing Wishlist """
+        test_wishlist = WishlistFactory()
+        # enable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/enabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["message"],
+                         "404 Not Found: Wishlist '{}' was not found."
+                         .format(test_wishlist.id))
+
+    def test_disable_existing_wishlist(self):
+        """ Disable an existing Wishlist """
+        test_wishlist = self._create_wishlists(1)[0]
+        # disable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/disabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Check that the status is correct
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["status"], False)
+
+    def test_disable_wishlist(self):
+        """ Disable a non-existing Wishlist """
+        test_wishlist = WishlistFactory()
+        # disable the wishlist
+        resp = self.app.put(
+            "/wishlists/{}/disabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["message"],
+                         "404 Not Found: Wishlist '{}' was not found."
+                         .format(test_wishlist.id))
 
 
 ######################################################################

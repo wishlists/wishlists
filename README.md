@@ -29,7 +29,7 @@ Then all you have to do is clone this repo and invoke vagrant:
  
  DELETE /wishlists/{wishlistID} - Delete a wishlist record in the database  
  
- GET /wishlists?name="wishlist_1" - Query the database by the name of the wishlist   
+ GET /wishlists?name=wishlist_1 - Query the database by the name of the wishlist   
 
  PUT /wishlists/{wishlistId}/disabled - It disables the target wishlist
  

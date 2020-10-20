@@ -22,6 +22,8 @@ GET /wishlists/{id} - Returns the wishlist with a given id number
 POST /wishlists - creates a new wishlist record in the database
 PUT /wishlists/{id} - updates a wishlist record in the database
 DELETE /wishlists/{id} - deletes a wishlist record in the database
+PUT /wishlists/{id}/enabled - enables a wishlist record in the database
+PUT /wishlists/{id}/disabled - disables a wishlist record in the database
 """
 
 from flask import jsonify, request, url_for, make_response, abort
@@ -131,7 +133,6 @@ def index():
         status.HTTP_200_OK,
     )
 
-
 ######################################################################
 # LIST ALL WISHLISTS
 ######################################################################
@@ -139,23 +140,26 @@ def index():
 def list_wishlists():
     """ Returns all of the Wishlists """
     app.logger.info("Request for wishlist list")
-    user_id = request.args.get("user_id")
-    name = request.args.get("name")
-    if user_id:
-        try:
-            user_id = int(user_id)
-        except ValueError:
-            raise DataValidationError("The user_id should be an integer")
-        wishlists = Wishlist.find_by_user_id(user_id)
-    elif name:
-        wishlists = Wishlist.find_by_name(name)
+    if request.args:
+        user_id = request.args.get("user_id")
+        name = request.args.get("name")
+        if user_id:
+            try:
+                user_id = int(user_id)
+            except ValueError:
+                raise DataValidationError("user_id should be an integer")
+            wishlists = Wishlist.find_by_user_id(user_id)
+        elif name:
+            name = name.strip("\"\'")
+            wishlists = Wishlist.find_by_name(name)
+        else:
+            raise DataValidationError("query parameter does not exist")
     else:
         wishlists = Wishlist.all()
 
     results = [wishlist.serialize() for wishlist in wishlists]
     app.logger.info("Returning %d wishlists", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
-
 
 ######################################################################
 # RETRIEVE A WISHLIST
@@ -284,7 +288,6 @@ def delete_wishlists(wishlist_id):
     app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
-
 ######################################################################
 # UPDATE A WISHLIST
 ######################################################################
@@ -302,6 +305,45 @@ def update_wishlists(wishlist_id):
     wishlist.save()
     message = wishlist.serialize()
     app.logger.info("Wishlist with ID [%s] updated.", wishlist_id)
+    return make_response(jsonify(message), status.HTTP_200_OK)
+
+######################################################################
+# ENABLE ACTION ON A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/enabled", methods=["PUT"])
+def enable_wishlist(wishlist_id):
+    """
+    Enable a Wishlist
+    This endpoint will enable a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to enable wishlist with id: %s", wishlist_id)
+    check_content_type("application/json")
+    wishlist = Wishlist.find_or_404(wishlist_id)
+    wishlist.id = wishlist_id
+    wishlist.status = True
+    wishlist.save()
+    message = wishlist.serialize()
+    app.logger.info("Wishlist with ID [%s] enabled.", wishlist_id)
+    return make_response(jsonify(message), status.HTTP_200_OK)
+
+
+######################################################################
+# DISABLE ACTION ON A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/disabled", methods=["PUT"])
+def disable_wishlist(wishlist_id):
+    """
+    Disable a Wishlist
+    This endpoint will disable a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to disable wishlist with id: %s", wishlist_id)
+    check_content_type("application/json")
+    wishlist = Wishlist.find_or_404(wishlist_id)
+    wishlist.id = wishlist_id
+    wishlist.status = False
+    wishlist.save()
+    message = wishlist.serialize()
+    app.logger.info("Wishlist with ID [%s] disabled.", wishlist_id)
     return make_response(jsonify(message), status.HTTP_200_OK)
 
 
