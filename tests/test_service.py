@@ -625,7 +625,7 @@ class TestWishlistService(unittest.TestCase):
             "/wishlists/{}/items/{}".format(wishlist.id, item.id),
             content_type="application/json"
         )
-        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # make sure it's deleted
         resp = self.app.get(
             "/wishlists/{}/items/{}".format(wishlist.id, item.id),
