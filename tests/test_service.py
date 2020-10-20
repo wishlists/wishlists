@@ -172,8 +172,13 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(same_wishlist["user_id"], wishlist.user_id)
 
     def test_get_wishlist_list_by_user_id_wrong_data_type(self):
-        """ Test the case that a wrong data type of user_id is used """
+        """ Query a list of wishlists using argument with wrong data type """
         resp = self.app.get("/wishlists?user_id=\"1\"")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_wishlist_list_by_nonexist_args(self):
+        """ Query a list of wishlists using nonexist argument"""
+        resp = self.app.get("/wishlists?length=20")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_wishlist(self):
@@ -543,16 +548,16 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(data["message"],
                          "415 Unsupported Media Type: Content-Type must be {}"
                          .format(app_type))
-    
+
     def test_enable_existing_wishlist(self):
         """ Enable an existing Wishlist """
         test_wishlist = self._create_wishlists(1)[0]
-         # enable the wishlist
+        # enable the wishlist
         test_wishlist.status = True
         resp = self.app.put(
             "/wishlists/{}/enabled".format(test_wishlist.id),
             json=test_wishlist.serialize(),
-            content_type="application/json",
+            content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         # Check that the status is correct
@@ -562,7 +567,7 @@ class TestWishlistService(unittest.TestCase):
     def test_enable_wishlist(self):
         """ Enable a non-existing Wishlist """
         test_wishlist = WishlistFactory()
-         # enable the wishlist
+        # enable the wishlist
         test_wishlist.status = True
         resp = self.app.put(
             "/wishlists/{}/enabled".format(test_wishlist.id),
@@ -578,7 +583,7 @@ class TestWishlistService(unittest.TestCase):
     def test_disable_existing_wishlist(self):
         """ Disable an existing Wishlist """
         test_wishlist = self._create_wishlists(1)[0]
-         # disable the wishlist
+        # disable the wishlist
         test_wishlist.status = False
         resp = self.app.put(
             "/wishlists/{}/disabled".format(test_wishlist.id),
@@ -593,7 +598,7 @@ class TestWishlistService(unittest.TestCase):
     def test_disable_wishlist(self):
         """ Disable a non-existing Wishlist """
         test_wishlist = WishlistFactory()
-         # disable the wishlist
+        # disable the wishlist
         test_wishlist.status = False
         resp = self.app.put(
             "/wishlists/{}/disabled".format(test_wishlist.id),

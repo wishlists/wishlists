@@ -141,22 +141,26 @@ def list_wishlists():
     """ Returns all of the Wishlists """
     app.logger.info("Request for wishlist list")
     wishlists = []
-    user_id = request.args.get("user_id")
-    name = request.args.get("name")
-    if user_id:
-        try:
-            user_id = int(user_id)
-        except ValueError:
-            abort(400, "The user_id should be an integer")
-        wishlists = Wishlist.find_by_user_id(user_id)
-    elif name:
-        wishlists = Wishlist.find_by_name(name)
+    if request.args:
+        user_id = request.args.get("user_id")
+        name = request.args.get("name")
+        if user_id:
+            try:
+                user_id = int(user_id)
+            except ValueError:
+                raise DataValidationError("user_id should be an integer")
+            wishlists = Wishlist.find_by_user_id(user_id)
+        elif name:
+            wishlists = Wishlist.find_by_name(name)
+        else:
+            raise DataValidationError("query parameter does not exist")
     else:
         wishlists = Wishlist.all()
 
     results = [wishlist.serialize() for wishlist in wishlists]
     app.logger.info("Returning %d wishlists", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
+
 
 ######################################################################
 # RETRIEVE A WISHLIST

@@ -55,6 +55,7 @@ class TestModel(unittest.TestCase):
 ######################################################################
 #  H E L P E R   M E T H O D S
 ######################################################################
+
     def _create_wishlist(self, items=None):
         """ Creates an account from a Factory """
         if not items:
@@ -86,6 +87,7 @@ class TestModel(unittest.TestCase):
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+
     def test_create_a_wishlist(self):
         """ Create a wishlist and assert that it exists """
         fake_wishlist = WishlistFactory()
@@ -233,7 +235,9 @@ class TestModel(unittest.TestCase):
 
     def test_serialize_a_wishlist(self):
         """ Serialize a wishlist """
-        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
+        item = Item(product_name='laptop',
+                    product_id=1,
+                    wishlist_id=1)
         wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item], status=True)
 
         wishlist = wishlist_obj.serialize()
@@ -251,7 +255,9 @@ class TestModel(unittest.TestCase):
 
     def test_deserialize_a_wishlist(self):
         """ Deserialize a wishlist """
-        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
+        item = Item(product_name='laptop',
+                    product_id=1,
+                    wishlist_id=1)
         wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item], status=True)
         serial_wishlist = wishlist_obj.serialize()
 
@@ -281,7 +287,7 @@ class TestModel(unittest.TestCase):
                          'wishlist_id: 1')
 
     def test_wishlist_str(self):
-        """ Test Wishlist __str__ method"""
+        """ Test Wishlist __str__ method """
         item = Item(product_name='laptop', product_id=1, wishlist_id=1)
         wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item], status=True)
         self.assertEqual(str(wishlist_obj),
