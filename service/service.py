@@ -188,6 +188,18 @@ def create_wishlists():
     check_content_type("application/json")
     wishlist = Wishlist()
     wishlist.deserialize(request.get_json())
+    data = request.get_json()
+
+    try:
+        items = []
+        for item in data["items"]:
+            new_item = Item()
+            items.append(new_item.deserialize(item))
+        wishlist.items = items
+    except KeyError as error:
+        raise DataValidationError("Invalid Wishlist: missing " +
+                                  error.args[0])
+
     wishlist.create()
     message = wishlist.serialize()
     location_url = url_for("get_wishlists",

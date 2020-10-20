@@ -112,9 +112,26 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["name"], "Wishlist Demo REST API Service")
 
+    def test_create_wishlist_bad_data(self):
+        """Test create wishlist """
+
+        test_wishlist = {"name": "abc",
+                         "user_id": 123}
+
+        resp = self.app.post(
+            "/wishlists",
+            json=test_wishlist,
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        data = resp.get_json()
+        self.assertEqual(data["message"], "Invalid Wishlist: missing items")
+
     def test_create_wishlist(self):
         """ Create a new wishlist """
         test_wishlist = WishlistFactory()
+        item = ItemFactory()
+        test_wishlist.items.append(item)
         resp = self.app.post(
             "/wishlists",
             json=test_wishlist.serialize(),
@@ -132,6 +149,11 @@ class TestWishlistService(unittest.TestCase):
             new_wishlist["user_id"], test_wishlist.user_id,
             "User id do not match"
         )
+        items = new_wishlist["items"][0]
+        self.assertEqual(items["product_name"]
+                         , item.product_name,
+                         "item product_name do not match"
+                         )
         # Check that the location header was correct
         resp = self.app.get(location, content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
