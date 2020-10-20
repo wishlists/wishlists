@@ -492,6 +492,60 @@ class TestWishlistService(unittest.TestCase):
                          "415 Unsupported Media Type: Content-Type must be {}"
                          .format(app_type))
 
+    def test_delete_item_from_wishlist(self):
+        """ Delete a single item """
+        # create a wishlist with item
+        wishlist, items = self._create_items(1)
+        item = items[0]
+        wishlist_id = wishlist.id
+        item_id = item.id
+        resp = self.app.get(
+            "/wishlists/{}/items/{}".format(wishlist_id, item_id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["product_name"], item.product_name)
+        resp = self.app.put(
+            "/wishlists/{}/items/{}".format(wishlist_id, item_id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # make sure it's deleted
+        resp = self.app.get(
+            "/wishlists/{}/items/{}".format(wishlist_id, item_id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_item_if_wishlist_not_found(self):
+        """ Test delete_item if wishlist is not found """
+        wishlist = WishlistFactory()
+        item = ItemFactory() 
+        resp = self.app.put(
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["message"],
+                         "404 Not Found: Wishlist '{}' was not found."
+                         .format(15))
+
+    def test_delete_item_if_item_not_found(self):
+        """ Test delete_item if item is not found """
+        wishlist, items = self._create_items(1)
+        item = ItemFactory() 
+        resp = self.app.put(
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["message"],
+                         "404 Not Found: Item with id '{}' was not found."
+                         .format(7))
+
 ######################################################################
 #   M A I N
 ######################################################################

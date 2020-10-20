@@ -258,6 +258,31 @@ def get_item_from_wishlist(wishlist_id, item_id):
     return make_response(jsonify(message), status.HTTP_200_OK)
 
 ######################################################################
+# DELETE ITEM FROM A WISHLIST
+######################################################################
+@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["PUT"])
+def delete_item_from_wishlist(wishlist_id, item_id):
+    """
+    Deletes an item from a Wishlist
+    This endpoint will return an Item based on its id
+    """
+    app.logger.info("Request to delete an item from a wishlist")
+    wishlist = Wishlist.find_or_404(wishlist_id)
+    get_item = None
+    for item in wishlist.items:
+        if item.id == item_id:
+            get_item = item
+            break
+
+    if get_item is None:
+        raise NotFound("Item with id '{}' was not found.".format(item_id))
+
+    get_item.delete()
+    app.logger.info("Item with ID [%s] was deleted.", wishlist_id)
+    message = wishlist.serialize()
+    return make_response(jsonify(message), status.HTTP_200_OK)
+
+######################################################################
 # DELETE A WISHLIST
 ######################################################################
 @app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
