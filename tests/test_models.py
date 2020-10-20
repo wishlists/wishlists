@@ -18,11 +18,10 @@ from tests.factories import WishlistFactory, ItemFactory
 DATABASE_URI = os.getenv("DATABASE_URI",
                          "postgres://postgres:postgres@localhost:5432/testdb")
 
+
 ######################################################################
 #  M O D E L   T E S T   C A S E S
 ######################################################################
-
-
 class TestModel(unittest.TestCase):
     """
     Test case for Items model
@@ -52,6 +51,7 @@ class TestModel(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
+
 ######################################################################
 #  H E L P E R   M E T H O D S
 ######################################################################
@@ -64,7 +64,8 @@ class TestModel(unittest.TestCase):
         wishlist = Wishlist(
             name=fake_wishlist.name,
             user_id=fake_wishlist.user_id,
-            items=items
+            items=items,
+            status=fake_wishlist.status
         )
         self.assertTrue(wishlist is not None)
         self.assertEqual(wishlist.id, None)
@@ -82,6 +83,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(item.id, None)
         return item
 
+
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
@@ -91,12 +93,14 @@ class TestModel(unittest.TestCase):
         fake_wishlist = WishlistFactory()
         wishlist = Wishlist(
             name=fake_wishlist.name,
-            user_id=fake_wishlist.user_id
+            user_id=fake_wishlist.user_id,
+            status=fake_wishlist.status
         )
         self.assertTrue(wishlist is not None)
         self.assertEqual(wishlist.id, None)
         self.assertEqual(wishlist.name, fake_wishlist.name)
         self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
+        self.assertEqual(wishlist.status, fake_wishlist.status)
 
     def test_add_a_wishlist(self):
         """ Create a wishlist and add it to the database """
@@ -231,8 +235,10 @@ class TestModel(unittest.TestCase):
 
     def test_serialize_a_wishlist(self):
         """ Serialize a wishlist """
-        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
-        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
+        item = Item(product_name='laptop',
+                    product_id=1,
+                    wishlist_id=1)
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item], status=True)
 
         wishlist = wishlist_obj.serialize()
         self.assertNotEqual(item, None)
@@ -240,6 +246,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(wishlist['id'], None)
         self.assertEqual(wishlist['name'], wishlist_obj.name)
         self.assertEqual(wishlist['user_id'], wishlist_obj.user_id)
+        self.assertEqual(wishlist['status'], wishlist_obj.status)
         items = wishlist['items']
         self.assertEqual(items[0]['id'], None)
         self.assertEqual(items[0]['product_name'], item.product_name)
@@ -248,16 +255,17 @@ class TestModel(unittest.TestCase):
 
     def test_deserialize_a_wishlist(self):
         """ Deserialize a wishlist """
-        item = Item(product_name='laptop', product_id=1, wishlist_id=1)
+        item = Item(product_name='laptop',
+                    product_id=1,
+                    wishlist_id=1)
         wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
         serial_wishlist = wishlist_obj.serialize()
-
         new_wishlist = Wishlist()
         new_wishlist.deserialize(serial_wishlist)
         self.assertEqual(new_wishlist.id, None)
         self.assertEqual(new_wishlist.name, wishlist_obj.name)
         self.assertEqual(new_wishlist.user_id, wishlist_obj.user_id)
-
+  
     def test_wishlist_deserialize_type_error(self):
         """ Test deserialization of type error for Wishlist"""
         data = "this is not a dictionary"
@@ -277,20 +285,20 @@ class TestModel(unittest.TestCase):
                          'wishlist_id: 1')
 
     def test_wishlist_str(self):
-        """ Test Wishlist __str__ method"""
+        """ Test Wishlist __str__ method """
         item = Item(product_name='laptop', product_id=1, wishlist_id=1)
-        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item], status=True)
         self.assertEqual(str(wishlist_obj),
                          'electronics: id: None, user_id: 123, items: '
                          '[<Item \'laptop\' id=[None] wishlist_id[1] '
-                         'product_id[1]>]')
+                         'product_id[1]>], status: True')
 
     def test_wishlist_repr(self):
         """ Test Wishlist __repr__ method"""
         item = Item(product_name='laptop', product_id=1, wishlist_id=1)
-        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item], status=True)
         print(repr(wishlist_obj))
         self.assertEqual(repr(wishlist_obj),
                          "<Wishlist 'electronics' user_id=[123] "
                          "items[[<Item 'laptop' id=[None] "
-                         "wishlist_id[1] product_id[1]>]]>")
+                         "wishlist_id[1] product_id[1]>]] status=[True]>")
