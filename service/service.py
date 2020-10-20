@@ -139,7 +139,6 @@ def index():
 def list_wishlists():
     """ Returns all of the Wishlists """
     app.logger.info("Request for wishlist list")
-    wishlists = []
     user_id = request.args.get("user_id")
     name = request.args.get("name")
     if user_id:
@@ -156,6 +155,7 @@ def list_wishlists():
     results = [wishlist.serialize() for wishlist in wishlists]
     app.logger.info("Returning %d wishlists", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
+
 
 ######################################################################
 # RETRIEVE A WISHLIST
@@ -254,6 +254,7 @@ def get_item_from_wishlist(wishlist_id, item_id):
     message = get_item.serialize()
     return make_response(jsonify(message), status.HTTP_200_OK)
 
+
 ######################################################################
 # LIST ITEMS FROM WISHLISTS
 ######################################################################
@@ -283,6 +284,7 @@ def delete_wishlists(wishlist_id):
     app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
+
 ######################################################################
 # UPDATE A WISHLIST
 ######################################################################
@@ -300,41 +302,6 @@ def update_wishlists(wishlist_id):
     wishlist.save()
     message = wishlist.serialize()
     app.logger.info("Wishlist with ID [%s] updated.", wishlist_id)
-    return make_response(jsonify(message), status.HTTP_200_OK)
-
-######################################################################
-# UPDATE AN EXISTING ITEM IN A WISHLIST
-######################################################################
-@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["PUT"])
-def update_item_in_wishlist(wishlist_id, item_id):
-    """
-    Updates an existing item in a Wishlist
-    This endpoint will update an existing item to the
-    Wishlist (id in path param) based the data in the posted body
-    """
-    app.logger.info("Request to update an existing item to a wishlist")
-    check_content_type("application/json")
-
-    new_item = Item()
-    new_item.deserialize(request.get_json())
-
-    print(new_item.serialize())
-
-    if new_item.wishlist_id != wishlist_id:
-        raise DataValidationError("wishlist_id in Item '{}' does not match "
-                                  "wishlist_id in the url {}"
-                                  .format(new_item.wishlist_id, wishlist_id))
-    # Checking if wishlist exists
-    Wishlist.find_or_404(wishlist_id)
-
-    get_item = Item.find_or_404(item_id)
-
-    get_item.deserialize(request.get_json())
-    get_item.id = item_id
-
-    get_item.save()
-    message = new_item.serialize()
-    app.logger.info("Item with ID [%s] updated.", item_id)
     return make_response(jsonify(message), status.HTTP_200_OK)
 
 
