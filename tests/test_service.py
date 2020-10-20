@@ -550,6 +550,17 @@ class TestWishlistService(unittest.TestCase):
     def test_enable_existing_wishlist(self):
         """ Enable an existing Wishlist """
         test_wishlist = self._create_wishlists(1)[0]
+        # disable the wishlist first because the default is enabled
+        resp = self.app.put(
+            "/wishlists/{}/disabled".format(test_wishlist.id),
+            json=test_wishlist.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Check that the status is correct
+        updated_wishlist = resp.get_json()
+        self.assertEqual(updated_wishlist["status"], False)
+
         # enable the wishlist
         resp = self.app.put(
             "/wishlists/{}/enabled".format(test_wishlist.id),
