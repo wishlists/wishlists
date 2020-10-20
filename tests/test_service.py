@@ -206,8 +206,7 @@ class TestWishlistService(unittest.TestCase):
         """ Test the wishlist added has missing arguments """
         test_wishlist = {
             "name": "wishlist1",
-            "user_id": 1,
-            "status": True
+            "user_id": 1
         }
         resp = self.app.post(
             "/wishlists", json=test_wishlist, content_type="application/json"
@@ -224,8 +223,7 @@ class TestWishlistService(unittest.TestCase):
         test_wishlist = {
             "name": "wishlist1",
             "user_id": 1,
-            "items": [],
-            "status": True
+            "items": []
         }
         resp = self.app.post(
             "/wishlists", json=test_wishlist,
@@ -553,7 +551,6 @@ class TestWishlistService(unittest.TestCase):
         """ Enable an existing Wishlist """
         test_wishlist = self._create_wishlists(1)[0]
         # enable the wishlist
-        test_wishlist.status = True
         resp = self.app.put(
             "/wishlists/{}/enabled".format(test_wishlist.id),
             json=test_wishlist.serialize(),
@@ -568,7 +565,6 @@ class TestWishlistService(unittest.TestCase):
         """ Enable a non-existing Wishlist """
         test_wishlist = WishlistFactory()
         # enable the wishlist
-        test_wishlist.status = True
         resp = self.app.put(
             "/wishlists/{}/enabled".format(test_wishlist.id),
             json=test_wishlist.serialize(),
@@ -584,7 +580,6 @@ class TestWishlistService(unittest.TestCase):
         """ Disable an existing Wishlist """
         test_wishlist = self._create_wishlists(1)[0]
         # disable the wishlist
-        test_wishlist.status = False
         resp = self.app.put(
             "/wishlists/{}/disabled".format(test_wishlist.id),
             json=test_wishlist.serialize(),
@@ -599,7 +594,6 @@ class TestWishlistService(unittest.TestCase):
         """ Disable a non-existing Wishlist """
         test_wishlist = WishlistFactory()
         # disable the wishlist
-        test_wishlist.status = False
         resp = self.app.put(
             "/wishlists/{}/disabled".format(test_wishlist.id),
             json=test_wishlist.serialize(),

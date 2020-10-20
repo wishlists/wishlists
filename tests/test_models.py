@@ -258,16 +258,14 @@ class TestModel(unittest.TestCase):
         item = Item(product_name='laptop',
                     product_id=1,
                     wishlist_id=1)
-        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item], status=True)
+        wishlist_obj = Wishlist(name="electronics", user_id=123, items=[item])
         serial_wishlist = wishlist_obj.serialize()
-
         new_wishlist = Wishlist()
         new_wishlist.deserialize(serial_wishlist)
         self.assertEqual(new_wishlist.id, None)
         self.assertEqual(new_wishlist.name, wishlist_obj.name)
         self.assertEqual(new_wishlist.user_id, wishlist_obj.user_id)
-        self.assertEqual(new_wishlist.status, wishlist_obj.status)
-
+  
     def test_wishlist_deserialize_type_error(self):
         """ Test deserialization of type error for Wishlist"""
         data = "this is not a dictionary"

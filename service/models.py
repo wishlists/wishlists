@@ -232,7 +232,6 @@ class Wishlist(db.Model, PersistentBase):
         try:
             self.name = data["name"]
             self.user_id = data["user_id"]
-            self.status = data["status"]
             item_list = data.get("items")
             for json_item in item_list:
                 item = Item()
