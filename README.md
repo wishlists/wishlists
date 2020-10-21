@@ -42,6 +42,7 @@ Then all you have to do is clone this repo and invoke vagrant:
  PUT /wishlists/{wishlist_id} - Updates an existing wishlist
  
  
+ DELETE http://localhost:5000/wishlists/{wishlistId}/items/{item_id} - Delete item by id from target wishlist  
  ## Manually running the Tests
 
 Run the tests using `nose`

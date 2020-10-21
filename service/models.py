@@ -138,6 +138,12 @@ class Item(db.Model, PersistentBase):
     ##################################################
     # INSTANCE METHODS
     ##################################################
+    def delete(self):
+        """ Removes a Wishlist from the data store """
+        logger.info("Deleting %s", self.product_name)
+        db.session.delete(self)
+        db.session.commit()
+
     def serialize(self):
         """ Serializes an Item into a dictionary """
         return {

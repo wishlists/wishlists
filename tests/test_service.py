@@ -639,6 +639,46 @@ class TestWishlistService(unittest.TestCase):
                          "404 Not Found: Wishlist '{}' was not found."
                          .format(test_wishlist.id))
 
+    def test_delete_item_from_wishlist(self):
+        """ Delete a single item """
+        # create a wishlist with item
+        wishlist, items = self._create_items(1)
+        item = items[0]
+        resp = self.app.delete(
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        # make sure it's deleted
+        resp = self.app.get(
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_item_if_wishlist_not_found(self):
+        """ Test delete_item if wishlist is not found """
+        wishlist = WishlistFactory()
+        item = ItemFactory()
+        resp = self.app.delete(
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        data = resp.get_json()
+        self.assertEqual(len(resp.data), 0)
+
+    def test_delete_item_if_item_not_found(self):
+        """ Test delete_item if item is not found """
+        wishlist, items = self._create_items(1)
+        item = ItemFactory()
+        resp = self.app.delete(
+            "/wishlists/{}/items/{}".format(wishlist.id, item.id),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        data = resp.get_json()
+        self.assertEqual(len(resp.data), 0)
 
 ######################################################################
 #   M A I N
