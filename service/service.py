@@ -283,17 +283,17 @@ def delete_item_from_wishlist(wishlist_id, item_id):
     This endpoint will return an Item based on its id
     """
     app.logger.info("Request to delete an item from a wishlist")
-    wishlist = Wishlist.find_or_404(wishlist_id)
-    get_item = None
-    for item in wishlist.items:
-        if item.id == item_id:
-            get_item = item
-            break
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        get_item = None
+        for item in wishlist.items:
+            if item.id == item_id:
+                get_item = item
+                break
 
-    if get_item is None:
-        raise NotFound("Item with id '{}' was not found.".format(item_id))
+        if get_item:
+            get_item.delete()
 
-    get_item.delete()
     app.logger.info("Item with ID [%s] was deleted.", wishlist_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
