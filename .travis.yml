@@ -6,7 +6,7 @@ python:
 install: "pip install -r requirements.txt"
 
 env:
-  - DATABASE_URI=postgres://postgres:@localhost:5432/test
+  - DATABASE_URI=postgres://postgres:postgres@localhost:5432/testdb
 
 # commands to run tests
 before_script:
