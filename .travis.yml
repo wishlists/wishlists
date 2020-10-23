@@ -5,8 +5,12 @@ python:
 # command to install dependencies
 install: "pip install -r requirements.txt"
 
+env:
+  - DATABASE_URI=postgres://postgres:@localhost:5432/test
+
 # commands to run tests
-before_script: psql -c "create database testdb;" -U postgres
+before_script:
+  - psql -c "create database testdb;" -U postgres
 
 script:
   - nosetests
