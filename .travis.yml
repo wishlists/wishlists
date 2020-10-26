@@ -1,0 +1,22 @@
+language: python
+python:
+  - "3.6"
+
+# command to install dependencies
+install: "pip install -r requirements.txt"
+
+env:
+  - DATABASE_URI=postgres://postgres:postgres@localhost:5432/testdb
+
+# commands to run tests
+before_script:
+  - psql -c "create database testdb;" -U postgres
+
+script:
+  - nosetests
+
+after_success:
+  - codecov
+
+services:
+  - postgresql

@@ -1,4 +1,8 @@
-# Introduction
+# Wishlists Microservice
+[![Build Status](https://travis-ci.org/wishlists/wishlists.svg?branch=master)](https://travis-ci.org/wishlists/wishlists)
+[![codecov](https://codecov.io/gh/wishlists/wishlists/branch/master/graph/badge.svg?token=FB40LLBT2P)](undefined)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 The wishlists resource allows customers to create a collection of products that they wish they had the money to purchase. A customer might have multiple wishlists so they might want to name them for easy identification. 
 
 ## Prerequisite Installation using Vagrant VM
