@@ -19,7 +19,11 @@ Then all you have to do is to clone this repo and invoke vagrant:
     vagrant up
     vagrant ssh
     cd /vagrant
-    FLASK_APP=service:app flask run -h 0.0.0.0
+
+You can run the code to test it out in your browser with the following command:
+   
+    honcho start
+When you are done, you can use `Ctrl+C` to stop the server and then exit and shut down the vm.
     
 ## Features supported
 
