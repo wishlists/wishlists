@@ -45,7 +45,10 @@ class TestWishlistService(unittest.TestCase):
         """ Run once before all tests """
         app.config['TESTING'] = True
         app.config['DEBUG'] = False
-        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+
+        if app.config["SQLALCHEMY_DATABASE_URI"] == "postgres://postgres:postgres@localhost:5432/postgres":
+            app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+
         app.logger.setLevel(logging.CRITICAL)
         init_db()
 
