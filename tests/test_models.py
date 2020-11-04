@@ -15,7 +15,7 @@ from service.models import Item, Wishlist, db, DataValidationError
 from service import app
 from tests.factories import WishlistFactory, ItemFactory
 
-DATABASE_URI = os.getenv("DATABASE_URI",
+DATABASE_URI = os.getenv("TEST_DATABASE_URI",
                          "postgres://postgres:postgres@localhost:5432/testdb")
 
 
@@ -32,10 +32,7 @@ class TestModel(unittest.TestCase):
         """ This runs once before the entire test suite """
         app.config['TESTING'] = True
         app.config['DEBUG'] = False
-
-        if app.config["SQLALCHEMY_DATABASE_URI"] == "postgres://postgres:postgres@localhost:5432/postgres":
-            app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
-
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         Item.init_db(app)
 
