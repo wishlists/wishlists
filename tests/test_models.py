@@ -12,7 +12,7 @@ import unittest
 import logging
 import os
 from service.models import Item, Wishlist, db, DataValidationError
-from service import app
+from service.service import app, init_db
 from tests.factories import WishlistFactory, ItemFactory
 
 DATABASE_URI = os.getenv("TEST_DATABASE_URI",
@@ -34,7 +34,7 @@ class TestModel(unittest.TestCase):
         app.config['DEBUG'] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
-        Item.init_db(app)
+        init_db()
 
     @classmethod
     def tearDownClass(cls):
