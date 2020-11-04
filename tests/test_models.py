@@ -15,7 +15,7 @@ from service.models import Item, Wishlist, db, DataValidationError
 from service.service import app, init_db
 from tests.factories import WishlistFactory, ItemFactory
 
-DATABASE_URI = os.getenv("TEST_DATABASE_URI",
+DATABASE_URI = os.getenv("DATABASE_URI",
                          "postgres://postgres:postgres@localhost:5432/testdb")
 
 
