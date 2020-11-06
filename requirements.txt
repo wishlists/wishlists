@@ -21,3 +21,9 @@ httpie>=1.0.3
 # Code coverage
 coverage==4.5.4
 codecov==2.1.10
+
+# Behavior Driven Development
+behave==1.2.6
+selenium==3.141.0
+compare==0.2b0
+requests==2.24.0
