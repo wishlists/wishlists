@@ -60,6 +60,8 @@ When you are done, you can use `Ctrl+C` to stop the server and then exit and shu
 
  ## Manually running the Tests
 
+You can now run `behave` and `nosetests` to run the BDD and TDD tests respectively.
+
 Run the tests using `nose`
 
 ```shell
@@ -81,6 +83,13 @@ You can also manually run `nosetests` with `coverage` (but `setup.cfg` does this
 ```shell
     $ nosetests --with-coverage --cover-package=service
 ```
+
+Run the tests using `behave`
+
+```shell
+    $ behave
+```
+Behave is configured in features directory.
 
 ## Running Pylint to check PEP8
 
