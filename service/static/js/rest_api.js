@@ -67,6 +67,7 @@ $(function () {
         ajax.done(function(res){
             //alert(res.toSource())
             $("#search_results").empty();
+            $("#search_results").append('<h4>Wishlists</h4>');
             $("#search_results").append('<table class="table-striped" cellpadding="10">');
             var header = '<tr>'
             header += '<th style="width:20%">ID</th>'
@@ -79,7 +80,8 @@ $(function () {
 
             for(var i = 0; i < res.length; i++) {
                 var wishlist = res[i];
-                var row = "<tr><td>"+wishlist.id+"</td><td>"+wishlist.name+"</td><td>"+ wishlist.user_id +"</td><td>"+wishlist.status+"</td></tr>";
+                var row = "<tr><td>"+wishlist.id+"</td><td>"+wishlist.name+"</td><td>"+ wishlist.user_id +"</td><td>" +
+                    (wishlist.status ? "enabled" : "disabled") + "</td></tr>";
 
                 $("#search_results").append(row);
 
@@ -170,6 +172,7 @@ $(function () {
     function addItemsTable(res, divID){
 
         $("#" + divID + "").empty();
+        $("#search_results").append('<h4>Items</h4>');
         $("#" + divID + "").append('<table class="table-striped" cellpadding="10">');
         var header = '<tr>'
         header += '<th style="width:20%">ID</th>'
