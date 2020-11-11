@@ -51,7 +51,9 @@ class TestWishlistService(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        pass
+        """ This runs after each test """
+        db.session.remove()
+        db.drop_all()
 
     def setUp(self):
         """ Runs before each test """

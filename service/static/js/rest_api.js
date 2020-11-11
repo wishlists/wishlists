@@ -39,14 +39,13 @@ $(function () {
 
         var name = $("#wishlist_name").val();
         var user_id = $("#wishlist_user_id").val();
-        var items = $("#wishlist_items").val();
-        var status = $("#wishlist_status").val() == "true";
 
         var queryString = ""
 
         if (name) {
             queryString += 'name=' + name
         }
+
         if (user_id) {
             if (queryString.length > 0) {
                 queryString += '&user_id=' + user_id
@@ -54,24 +53,13 @@ $(function () {
                 queryString += 'user_id=' + user_id
             }
         }
-        if (items) {
-            if (queryString.length > 0) {
-                queryString += '&items=' + items
-            } else {
-                queryString += 'items=' + items
-            }
-        }
-        if (status) {
-            if (queryString.length > 0) {
-                queryString += '&status=' + status
-            } else {
-                queryString += 'status=' + status
-            }
-        }
+
+        if(queryString.length > 0)
+            queryString = "?" + queryString;
 
         var ajax = $.ajax({
             type: "GET",
-            url: "/wishlists?" + queryString,
+            url: "/wishlists" + queryString,
             contentType: "application/json",
             data: ''
         })
@@ -84,15 +72,22 @@ $(function () {
             header += '<th style="width:20%">ID</th>'
             header += '<th style="width:20%">Name</th>'
             header += '<th style="width:20%">UserID</th>'
-            header += '<th style="width:20%">Items</th>'
             header += '<th style="width:20%">Status</th></tr>'
             $("#search_results").append(header);
             var firstWishlist = "";
+            var items = []
+
             for(var i = 0; i < res.length; i++) {
                 var wishlist = res[i];
-                var row = "<tr><td>"+wishlist.id+"</td><td>"+wishlist.name+"</td><td>"+wishlist.user_id+"</td><td>"+wishlist.items+"</td><td>"+wishlist.status+"</td></tr>";
+                var row = "<tr><td>"+wishlist.id+"</td><td>"+wishlist.name+"</td><td>"+ wishlist.user_id +"</td><td>"+wishlist.status+"</td></tr>";
+
                 $("#search_results").append(row);
-                if (i == 0) {
+
+                for(var j = 0; j < wishlist.items.length; j++){
+                    items.push(wishlist.items[j]);
+                }
+
+                if (i === 0) {
                     firstWishlist = wishlist;
                 }
             }
@@ -103,6 +98,8 @@ $(function () {
             if (firstWishlist != "") {
                 update_wishlist_form_data(firstWishlist)
             }
+
+            addItemsTable(items, "search_results_items")
 
             flash_message("Success")
         });
@@ -158,30 +155,8 @@ $(function () {
 
         ajax.done(function(res){
             //alert(res.toSource())
-            $("#search_results").empty();
-            $("#search_results").append('<table class="table-striped" cellpadding="10">');
-            var header = '<tr>'
-            header += '<th style="width:10%">ID</th>'
-            header += '<th style="width:40%">Name</th>'
-            header += '<th style="width:40%">Category</th>'
-            header += '<th style="width:10%">Available</th></tr>'
-            $("#search_results").append(header);
-            var firstPet = "";
-            for(var i = 0; i < res.length; i++) {
-                var pet = res[i];
-                var row = "<tr><td>"+pet._id+"</td><td>"+pet.name+"</td><td>"+pet.category+"</td><td>"+pet.available+"</td></tr>";
-                $("#search_results").append(row);
-                if (i == 0) {
-                    firstPet = pet;
-                }
-            }
 
-            $("#search_results").append('</table>');
-
-            // copy the first result to the form
-            if (firstPet != "") {
-                update_item_form_data(firstPet)
-            }
+            addItemsTable(res, "search_results")
 
             flash_message("Success")
         });
@@ -191,5 +166,33 @@ $(function () {
         });
 
     });
+
+    function addItemsTable(res, divID){
+
+        $("#" + divID + "").empty();
+        $("#" + divID + "").append('<table class="table-striped" cellpadding="10">');
+        var header = '<tr>'
+        header += '<th style="width:20%">ID</th>'
+        header += '<th style="width:20%">Wishlist ID</th>'
+        header += '<th style="width:20%">Product Name</th>'
+        header += '<th style="width:20%">Product ID</th></tr>'
+        $("#" + divID + "").append(header);
+        var firstItem = "";
+        for(var i = 0; i < res.length; i++) {
+            var item = res[i];
+            var row = "<tr><td>"+item.id+"</td><td>"+ item.wishlist_id +"</td><td>"+item.product_name+"</td><td>"+ item.product_id +"</td></tr>";
+            $("#" + divID + "").append(row);
+            if (i === 0) {
+                firstItem = item;
+            }
+        }
+
+        $("#" + divID + "").append('</table>');
+
+        // copy the first result to the form
+        if (firstItem !== "") {
+            update_item_form_data(firstItem)
+        }
+    }
 
 })
