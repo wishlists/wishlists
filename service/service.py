@@ -37,6 +37,13 @@ from service.models import Wishlist, Item, DataValidationError
 # Import Flask application
 from . import app
 
+@app.route('/items.html')
+def items():
+    return app.send_static_file('items.html')
+
+@app.route('/')
+def homepage():
+    return app.send_static_file('index.html')
 
 ######################################################################
 # Error Handlers
