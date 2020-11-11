@@ -40,11 +40,13 @@ from . import app
 
 @app.route('/items.html')
 def items():
+    """ Loads the items.html page """
     return app.send_static_file('items.html')
 
 
 @app.route('/')
 def homepage():
+    """ Loads the homepage (wishlist) page """
     return app.send_static_file('index.html')
 
 

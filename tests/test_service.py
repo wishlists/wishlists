@@ -113,6 +113,12 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertIn(b"Wishlist RESTful Service", resp.data)
 
+    def test_homepage(self):
+        """ Test the Home Page """
+        resp = self.app.get('/items.html')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertIn(b"Wishlist RESTful Service (Items)", resp.data)
+
     def test_create_wishlist_bad_data(self):
         """Test create wishlist """
 
