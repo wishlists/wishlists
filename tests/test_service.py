@@ -109,10 +109,9 @@ class TestWishlistService(unittest.TestCase):
 
     def test_index(self):
         """ Test the Home Page """
-        resp = self.app.get("/")
+        resp = self.app.get('/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(data["name"], "Wishlist RESTful Service")
+        self.assertIn(b"Wishlist RESTful Service", resp.data)
 
     def test_create_wishlist_bad_data(self):
         """Test create wishlist """

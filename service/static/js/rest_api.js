@@ -30,6 +30,39 @@ $(function () {
         $("#flash_message").empty();
         $("#flash_message").append(message);
     }
+    
+    /// Clears all Wishlist form fields
+    function clear_wishlist_form_data() {
+        $("#wishlist_name").val("");
+        $("#wishlist_user_id").val("");
+        $("#wishlist_items").val("");
+        $("#wishlist_status").val("");
+    }
+
+    /// Clears all Item form fields
+    function clear_item_form_data() {
+        $("#item_wishlist_id").val("");
+        $("#item_product_id").val("");
+        $("#item_product_name").val("");
+    }
+
+    // ****************************************
+    // Clear the Wishlist form
+    // ****************************************
+
+    $("#clear-btn").click(function () {
+        $("#wishlist_id").val("");
+        clear_wishlist_form_data()
+    });
+
+    // ****************************************
+    // Clear the Item form
+    // ****************************************
+
+    $("#clear-item-btn").click(function () {
+        $("#item_id").val("");
+        clear_item_form_data()
+    });
 
     // ****************************************
     // Search for a Wishlist (list all wishlists)
