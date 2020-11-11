@@ -666,7 +666,6 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        data = resp.get_json()
         self.assertEqual(len(resp.data), 0)
 
     def test_delete_item_if_item_not_found(self):
@@ -678,7 +677,6 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        data = resp.get_json()
         self.assertEqual(len(resp.data), 0)
 
 ######################################################################
