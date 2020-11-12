@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wishlist RESTful Service</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/css/blue_bootstrap.min.css">
+    <script type="text/javascript" src = "static/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="static/js/rest_api.js"></script>
+  </head>
+  <body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Wishlist REST API Service</h1>
+        </div>
+
+        <!-- Flash Message -->
+        <div class="table-responsive">
+          <table class="table">
+            <tr><td>Status:</td><td><span id="flash_message"></span></td></tr>
+          </table>
+        </div>
+
+        <div class="col-md-12" id="form_data">
+          Create, Retrieve, Update, and Delete a Wishlist:
+          <div class="well">
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="wishlist_id">Wishlist ID:</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="wishlist_id" placeholder="Enter ID of Wishlist">
+                </div>
+                <div class="col-sm-4">
+                  <button type="submit" class="btn btn-primary" id="retrieve-btn">Retrieve</button>
+                  <button type="submit" class="btn btn-danger" id="delete-btn">Delete</button>
+                  &nbsp;&nbsp;&nbsp;
+                  <a href="items.html">
+                    <button>Item Page</button>
+                  </a>
+                </div>
+              </div>
+            </div> <!-- form div -->
+
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="wishlist_name">Name:</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="wishlist_name" placeholder="Enter name for Wishlist">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="wishlist_user_id">User ID:</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="wishlist_user_id" placeholder="Enter user id for Wishlist">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="wishlist_status">Status:</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="wishlist_status">
+                      <option value="true" selected>Enabled</option>
+                      <option value="false">Disabled</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-primary" id="search-btn">Search</button>
+                  <button type="submit" class="btn btn-primary" id="clear-btn">Clear</button>
+                  <button type="submit" class="btn btn-success" id="create-btn">Create</button>
+                  <button type="submit" class="btn btn-warning" id="update-btn">Update</button>
+                </div>
+              </div>
+          </div> <!-- form div -->
+        </div>
+
+        <!-- Search Results -->
+
+        <div class="table-responsive col-md-10" id="search_results">
+          <h4>Wishlists</h4>
+          <table class="table-striped">
+            <thead>
+            <tr>
+                <th class="col-md-2">ID</th>
+                <th class="col-md-2">Name</th>
+                <th class="col-md-2">UserID</th>
+                <th class="col-md-2">Status</th>
+            </tr>
+            </thead>
+          </table>
+        </div>
+
+
+        <!-- Search Results Items-->
+
+        <div class="table-responsive col-md-10" id="search_results_items">
+            <h4>Items</h4>
+            <table class="table-striped">
+            <thead>
+            <tr>
+                <th class="col-md-2">ID</th>
+                <th class="col-md-2">Wishlist ID</th>
+                <th class="col-md-2">Product ID</th>
+                <th class="col-md-2">Product Name</th>
+            </tr>
+            </thead>
+          </table>
+        </div>
+
+        <footer>
+          <br><br>
+          <p>&copy; NYU DevOps Company 2020</p>
+        </footer>
+        </div><!--/span-->
+     </div><!--/row-->
+
+  </div><!-- container -->
+  </body>
+</html>

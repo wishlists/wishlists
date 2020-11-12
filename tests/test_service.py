@@ -51,7 +51,9 @@ class TestWishlistService(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        pass
+        """ This runs after each test """
+        db.session.remove()
+        db.drop_all()
 
     def setUp(self):
         """ Runs before each test """
@@ -107,10 +109,15 @@ class TestWishlistService(unittest.TestCase):
 
     def test_index(self):
         """ Test the Home Page """
-        resp = self.app.get("/")
+        resp = self.app.get('/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(data["name"], "Wishlist Demo REST API Service")
+        self.assertIn(b"Wishlist RESTful Service", resp.data)
+
+    def test_homepage(self):
+        """ Test the Home Page """
+        resp = self.app.get('/items.html')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertIn(b"Wishlist RESTful Service (Items)", resp.data)
 
     def test_create_wishlist_bad_data(self):
         """Test create wishlist """
@@ -665,7 +672,6 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        data = resp.get_json()
         self.assertEqual(len(resp.data), 0)
 
     def test_delete_item_if_item_not_found(self):
@@ -677,7 +683,6 @@ class TestWishlistService(unittest.TestCase):
             content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        data = resp.get_json()
         self.assertEqual(len(resp.data), 0)
 
 ######################################################################

@@ -38,6 +38,18 @@ from service.models import Wishlist, Item, DataValidationError
 from . import app
 
 
+@app.route('/items.html')
+def items():
+    """ Loads the items.html page """
+    return app.send_static_file('items.html')
+
+
+@app.route('/')
+def homepage():
+    """ Loads the homepage (wishlist) page """
+    return app.send_static_file('index.html')
+
+
 ######################################################################
 # Error Handlers
 ######################################################################
@@ -118,22 +130,6 @@ def internal_server_error(error):
 
 
 ######################################################################
-# GET INDEX
-######################################################################
-@app.route("/")
-def index():
-    """ Root URL response """
-    app.logger.info("Request for Root URL")
-    return (
-        jsonify(
-            name="Wishlist Demo REST API Service",
-            version="1.0",
-            paths=url_for("list_wishlists", _external=True),
-        ),
-        status.HTTP_200_OK,
-    )
-
-######################################################################
 # LIST ALL WISHLISTS
 ######################################################################
 @app.route("/wishlists", methods=["GET"])
@@ -160,6 +156,7 @@ def list_wishlists():
     results = [wishlist.serialize() for wishlist in wishlists]
     app.logger.info("Returning %d wishlists", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
+
 
 ######################################################################
 # RETRIEVE A WISHLIST
@@ -307,6 +304,7 @@ def delete_item_from_wishlist(wishlist_id, item_id):
     app.logger.info("Item with ID [%s] was deleted.", wishlist_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
+
 ######################################################################
 # DELETE A WISHLIST
 ######################################################################
@@ -323,6 +321,7 @@ def delete_wishlists(wishlist_id):
 
     app.logger.info("Wishlist with ID [%s] delete complete.", wishlist_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
+
 
 ######################################################################
 # UPDATE A WISHLIST
@@ -342,6 +341,7 @@ def update_wishlists(wishlist_id):
     message = wishlist.serialize()
     app.logger.info("Wishlist with ID [%s] updated.", wishlist_id)
     return make_response(jsonify(message), status.HTTP_200_OK)
+
 
 ######################################################################
 # ENABLE ACTION ON A WISHLIST
