@@ -100,7 +100,7 @@ Vagrant.configure(2) do |config|
     echo " For the Kubernetes Dashboard use:"
     echo " kubectl proxy --address='0.0.0.0'"
     echo "************************************\n"
-
+  SHELL
 
   ######################################################################
   # Add PostgreSQL docker container
