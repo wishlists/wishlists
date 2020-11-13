@@ -5,9 +5,9 @@ Feature: The wishlist service back-end
 
 Background:
     Given the following wishlists
-        | name        | user_id    | items      | status    |
-        | electronics | 101        |     | True      |
-        | phones      | 102        |     | True      |
+        | name        | user_id    |  status    |
+        | electronics | 101        |  True      |
+        | phones      | 102        |  True      |
 
 
     # Given the following items

@@ -40,7 +40,7 @@ def step_impl(context):
         data = {
             "name": row['name'],
             "user_id": row['user_id'],
-            "items": row['items'],
+            "items": [],
             "status": row['status'] in ['True', 'true', '1']
             }
             
