@@ -30,6 +30,69 @@ $(function () {
         $("#flash_message").empty();
         $("#flash_message").append(message);
     }
+
+    // ****************************************
+    // Create a Wishlist
+    // ****************************************
+
+    $("#create-btn").click(function () {
+
+        var name = $("#wishlist_name").val();
+        var user_id = $("#wishlist_user_id").val();
+        // var items = $("#wishlist_items").val();
+        var status = $("#wishlist_status").val() == "Enabled";
+
+        var data = {
+            "name": name,
+            "user_id": user_id,
+            "items": [],
+            "status": status
+        };
+        
+        var ajax = $.ajax({
+            type: "POST",
+            url: "/wishlists",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            update_wishlist_form_data(res)
+            flash_message("Success")    
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    });
+
+    // ****************************************
+    // Retrieve a Wishlist
+    // ****************************************
+
+    $("#retrieve-btn").click(function () {
+
+        var wishlist_id = $("#wishlist_id").val();
+       
+        var ajax = $.ajax({
+            type: "GET",
+            url: "/wishlists/" + wishlist_id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            update_wishlist_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            clear_form_data()
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
     
     /// Clears all Wishlist form fields
     function clear_wishlist_form_data() {
@@ -183,7 +246,7 @@ $(function () {
 
         var ajax = $.ajax({
             type: "GET",
-            url: "/pets?" + queryString,
+            url: "/wishlists?" + queryString,
             contentType: "application/json",
             data: ''
         })
