@@ -5,9 +5,10 @@ Feature: The wishlist service back-end
 
 Background:
     Given the following wishlists
-        | name        | user_id    |  status    |
-        | electronics | 101        |  True      |
-        | phones      | 102        |  True      |
+        | name         | user_id    |  status    |
+        | electronics  | 101        |  Enabled   |
+        | black_friday | 102        |  Enabled   |
+        | phones       | 103        |  Disabled  |
 
 
     # Given the following items
@@ -25,6 +26,7 @@ Scenario: List all wishlists
     And I press the "Search" button
     Then I should see "electronics" in the results
     And I should see "phones" in the results
+    And I should see "black_friday" in the results
 
 # Scenario: List all items
 #     When I visit the "Home Page"
@@ -50,3 +52,44 @@ Scenario: Create a Wishlist
     Then I should see "wishlist1" in the "Name" field
     And I should see "10" in the "User_ID" field
     And I should see "Enabled" in the "status" dropdown
+
+Scenario: Update a Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see "electronics" in the results
+    Then I should not see "new_year" in the results
+    And I should see "phones" in the results
+    And I should see "black_friday" in the results
+    When I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "User_ID" field should be empty
+    When I set the "name" to "electronics"
+    And I press the "Search" button
+    Then I should see "electronics" in the "Name" field
+    And I should see "101" in the "User_ID" field
+    And I should see "Enabled" in the "status" dropdown
+    And I should not see "phones" in the results
+    When I set the "name" to "new_year"
+    When I set the "user_id" to "104"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "User_ID" field should be empty
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see "new_year" in the "Name" field
+    And I should see "104" in the "User_ID" field
+    And I should see "Enabled" in the "status" dropdown
+    When I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "User_ID" field should be empty
+    When I press the "Search" button
+    Then I should not see "electronics" in the results
+    Then I should see "new_year" in the results
+    And I should see "phones" in the results
+    And I should see "black_friday" in the results

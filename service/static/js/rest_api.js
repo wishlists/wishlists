@@ -39,7 +39,6 @@ $(function () {
 
         var name = $("#wishlist_name").val();
         var user_id = $("#wishlist_user_id").val();
-        // var items = $("#wishlist_items").val();
         var status = $("#wishlist_status").val() == "Enabled";
 
         var data = {
@@ -58,6 +57,8 @@ $(function () {
 
         ajax.done(function(res){
             update_wishlist_form_data(res)
+            $("#search_results").empty();
+            $("#search_results_items").empty();
             flash_message("Success")    
         });
 
@@ -94,7 +95,7 @@ $(function () {
     });
 
     
-    /// Clears all Wishlist form fields
+    // Clears all Wishlist form fields
     function clear_wishlist_form_data() {
         $("#wishlist_name").val("");
         $("#wishlist_user_id").val("");
@@ -102,12 +103,48 @@ $(function () {
         $("#wishlist_status").val("");
     }
 
-    /// Clears all Item form fields
+    // Clears all Item form fields
     function clear_item_form_data() {
         $("#item_wishlist_id").val("");
         $("#item_product_id").val("");
         $("#item_product_name").val("");
     }
+
+
+    // ****************************************
+    // Update the Wishlist from the form
+    // ****************************************
+
+    $("#update-btn").click(function () {
+        var wishlist_id = $("#wishlist_id").val();
+        var name = $("#wishlist_name").val();
+        var user_id = $("#wishlist_user_id").val();
+
+        var data = {
+            "name": name,
+            "user_id": user_id
+        };
+
+        var ajax = $.ajax({
+            type: "PUT",
+            url: "/wishlists/" + wishlist_id,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            update_wishlist_form_data(res)
+            $("#search_results").empty();
+            $("#search_results_items").empty();
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
 
     // ****************************************
     // Clear the Wishlist form
