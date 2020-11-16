@@ -5,14 +5,13 @@ applications:
   path: .
   instances: 2
   memory: 64M
-  routes:
-  - route: nyu-wishlist-service-f20.us-south.cf.appdomain.cloud
+  host: nyu-wishlist-service-f20
+  domain: appdomain.cloud
   disk_quota: 1024M
-  buildpacks: 
-  - python_buildpack
+  buildpacks: python_buildpack
   timeout: 180
   services:
   - ElephantSQL
   env:
-    FLASK_APP : service:app
+    FLASK_APP : app:app
     FLASK_DEBUG : false
