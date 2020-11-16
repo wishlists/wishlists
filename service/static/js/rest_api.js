@@ -25,6 +25,21 @@ $(function () {
         $("#item_product_name").val(res.product_name);
     }
 
+    // Clears all Wishlist form fields
+    function clear_wishlist_form_data() {
+        $("#wishlist_name").val("");
+        $("#wishlist_user_id").val("");
+        $("#wishlist_items").val("");
+        $("#wishlist_status").val("");
+    }
+
+    // Clears all Item form fields
+    function clear_item_form_data() {
+        $("#item_wishlist_id").val("");
+        $("#item_product_id").val("");
+        $("#item_product_name").val("");
+    }
+
     // Updates the flash message area
     function flash_message(message) {
         $("#flash_message").empty();
@@ -39,7 +54,6 @@ $(function () {
 
         var name = $("#wishlist_name").val();
         var user_id = $("#wishlist_user_id").val();
-        // var items = $("#wishlist_items").val();
         var status = $("#wishlist_status").val() == "Enabled";
 
         var data = {
@@ -58,6 +72,8 @@ $(function () {
 
         ajax.done(function(res){
             update_wishlist_form_data(res)
+            $("#search_results").empty();
+            $("#search_results_items").empty();
             flash_message("Success")    
         });
 
@@ -93,21 +109,65 @@ $(function () {
 
     });
 
-    
-    /// Clears all Wishlist form fields
-    function clear_wishlist_form_data() {
-        $("#wishlist_name").val("");
-        $("#wishlist_user_id").val("");
-        $("#wishlist_items").val("");
-        $("#wishlist_status").val("");
-    }
+    // ****************************************
+    // Update the Wishlist from the form
+    // ****************************************
 
-    /// Clears all Item form fields
-    function clear_item_form_data() {
-        $("#item_wishlist_id").val("");
-        $("#item_product_id").val("");
-        $("#item_product_name").val("");
-    }
+    $("#update-btn").click(function () {
+        var wishlist_id = $("#wishlist_id").val();
+        var name = $("#wishlist_name").val();
+        var user_id = $("#wishlist_user_id").val();
+
+        var data = {
+            "name": name,
+            "user_id": user_id
+        };
+
+        var ajax = $.ajax({
+            type: "PUT",
+            url: "/wishlists/" + wishlist_id,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            update_wishlist_form_data(res)
+            $("#search_results").empty();
+            $("#search_results_items").empty();
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
+    // Delete a Wishlist
+    // ****************************************
+
+    $("#delete-btn").click(function () {
+
+        var wishlist_id = $("#wishlist_id").val();
+       
+        var ajax = $.ajax({
+            type: "DELETE",
+            url: "/wishlists/" + wishlist_id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            clear_wishlist_form_data()
+            flash_message("Wishlist has been deleted")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
 
     // ****************************************
     // Clear the Wishlist form
