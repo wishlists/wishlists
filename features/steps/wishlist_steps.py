@@ -28,6 +28,7 @@ def step_impl(context):
     """ Delete all Wishlists and load new ones """
     headers = {'Content-Type': 'application/json'}
     # list all of the wishlists and delete them one by one
+    print(context.base_url)
     context.resp = requests.get(context.base_url + '/wishlists', headers=headers)
     expect(context.resp.status_code).to_equal(200)
     for wishlist in context.resp.json():
