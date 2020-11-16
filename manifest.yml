@@ -6,7 +6,7 @@ applications:
   instances: 2
   memory: 64M
   host: nyu-wishlist-service-f20
-  domain: appdomain.cloud
+  domain: us-south.cf.appdomain.cloud
   disk_quota: 1024M
   buildpack: python_buildpack
   timeout: 180
