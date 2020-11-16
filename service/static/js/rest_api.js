@@ -117,6 +117,7 @@ $(function () {
         var wishlist_id = $("#wishlist_id").val();
         var name = $("#wishlist_name").val();
         var user_id = $("#wishlist_user_id").val();
+        var status = $("#wishlist_status").val();
 
         var data = {
             "name": name,
@@ -131,6 +132,16 @@ $(function () {
         });
 
         ajax.done(function(res){
+            if ((res.status === true && status === "false") || (res.status === false && status === "true")) {
+                if(status === "false"){
+                    disableWishlist(wishlist_id);
+                    res.status = false;
+                } else {
+                    enableWishlist(wishlist_id);
+                    res.status = true;
+                }
+            }
+
             update_wishlist_form_data(res)
             $("#search_results").empty();
             $("#search_results_items").empty();
@@ -142,6 +153,50 @@ $(function () {
         });
 
     });
+
+    // ****************************************
+    // Update status of Wishlist
+    // ****************************************
+
+    // Enabled
+
+    function enableWishlist(wishlist_id){
+        var data = {};
+
+        var ajax = $.ajax({
+            type: "PUT",
+            url: "/wishlists/" + wishlist_id + "/enabled",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(){
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    }
+
+    // Disabled
+
+    function disableWishlist(wishlist_id){
+        var data = {};
+
+        var ajax = $.ajax({
+            type: "PUT",
+            url: "/wishlists/" + wishlist_id + "/disabled",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(){
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    }
 
     // ****************************************
     // Delete a Wishlist
@@ -221,7 +276,6 @@ $(function () {
         })
 
         ajax.done(function(res){
-            //alert(res.toSource())
             $("#search_results").empty();
             $("#search_results").append('<h4>Wishlists</h4>');
             $("#search_results").append('<table class="table-striped" cellpadding="10">');
