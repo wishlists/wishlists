@@ -160,6 +160,8 @@ $(function () {
 
         ajax.done(function(res){
             clear_wishlist_form_data()
+            $("#search_results").empty();
+            $("#search_results_items").empty();
             flash_message("Wishlist has been deleted")
         });
 
