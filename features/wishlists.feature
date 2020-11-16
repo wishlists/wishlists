@@ -93,3 +93,29 @@ Scenario: Update a Wishlist
     Then I should see "new_year" in the results
     And I should see "phones" in the results
     And I should see "black_friday" in the results
+
+Scenario: Delete a Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see "electronics" in the results
+    And I should see "phones" in the results
+    And I should see "black_friday" in the results
+    When I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "User_ID" field should be empty
+    When I set the "name" to "electronics"
+    And I press the "Search" button
+    Then I should see "electronics" in the "Name" field
+    And I should see "101" in the "User_ID" field
+    And I should see "Enabled" in the "status" dropdown
+    When I press the "Delete" button
+    Then I should see the message "Wishlist has been deleted"
+    When I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "User_ID" field should be empty
+    When I press the "Search" button
+    Then I should not see "electronics" in the results
+    And I should see "phones" in the results
+    And I should see "black_friday" in the results

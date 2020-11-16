@@ -25,6 +25,21 @@ $(function () {
         $("#item_product_name").val(res.product_name);
     }
 
+    // Clears all Wishlist form fields
+    function clear_wishlist_form_data() {
+        $("#wishlist_name").val("");
+        $("#wishlist_user_id").val("");
+        $("#wishlist_items").val("");
+        $("#wishlist_status").val("");
+    }
+
+    // Clears all Item form fields
+    function clear_item_form_data() {
+        $("#item_wishlist_id").val("");
+        $("#item_product_id").val("");
+        $("#item_product_name").val("");
+    }
+
     // Updates the flash message area
     function flash_message(message) {
         $("#flash_message").empty();
@@ -94,23 +109,6 @@ $(function () {
 
     });
 
-    
-    // Clears all Wishlist form fields
-    function clear_wishlist_form_data() {
-        $("#wishlist_name").val("");
-        $("#wishlist_user_id").val("");
-        $("#wishlist_items").val("");
-        $("#wishlist_status").val("");
-    }
-
-    // Clears all Item form fields
-    function clear_item_form_data() {
-        $("#item_wishlist_id").val("");
-        $("#item_product_id").val("");
-        $("#item_product_name").val("");
-    }
-
-
     // ****************************************
     // Update the Wishlist from the form
     // ****************************************
@@ -145,6 +143,31 @@ $(function () {
 
     });
 
+    // ****************************************
+    // Delete a Wishlist
+    // ****************************************
+
+    $("#delete-btn").click(function () {
+
+        var wishlist_id = $("#wishlist_id").val();
+       
+        var ajax = $.ajax({
+            type: "DELETE",
+            url: "/wishlists/" + wishlist_id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            clear_wishlist_form_data()
+            flash_message("Wishlist has been deleted")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
 
     // ****************************************
     // Clear the Wishlist form
