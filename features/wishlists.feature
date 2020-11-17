@@ -53,6 +53,31 @@ Scenario: Create a Wishlist
     And I should see "10" in the "User_ID" field
     And I should see "Enabled" in the "status" dropdown
 
+Scenario: Query a Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see "electronics" in the results
+    And I should see "phones" in the results
+    And I should see "black_friday" in the results
+    When I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "User_ID" field should be empty
+    When I set the "name" to "electronics"
+    And I press the "Search" button
+    Then I should see "electronics" in the "Name" field
+    And I should see "101" in the "User_ID" field
+    And I should see "Enabled" in the "status" dropdown
+    When I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "User_ID" field should be empty
+    When I set the "user_id" to "102"
+    And I press the "Search" button
+    Then I should see "black_friday" in the "Name" field
+    And I should see "102" in the "User_ID" field
+    And I should see "Enabled" in the "status" dropdown
+
 Scenario: Update a Wishlist
     When I visit the "Home Page"
     And I press the "Search" button
