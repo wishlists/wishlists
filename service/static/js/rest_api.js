@@ -11,9 +11,9 @@ $(function () {
         $("#wishlist_user_id").val(res.user_id);
         $("#wishlist_items").val(res.items);
         if (res.status == true) {
-            $("#wishlist_status").val("true") == "Enabled";
+            $("#wishlist_status").val("true");
         } else {
-            $("#wishlist_status").val("false") == "Disabled";
+            $("#wishlist_status").val("false");
         }
     }
 
