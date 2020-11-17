@@ -23,12 +23,10 @@ before_script:
   - psql -c "create database testdb;" -U postgres
   - psql --version
   - chromedriver --version
-  - gunicorn --log-level=info --bind=127.0.0.1:5000 service:app 2>&1 > server.log &  # start a Web server in the background
+  - gunicorn --log-level=info --bind=127.0.0.1:5000 service:app &  # start a Web server in the background
   - sleep 5 # give Web server some time to bind to sockets, etc
   - curl -I http://localhost:5000/  # make sure the service is up
 
-#after_script:
-#  - cat server.log
 
 script:
   - behave
