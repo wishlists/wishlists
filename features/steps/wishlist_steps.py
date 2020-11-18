@@ -77,6 +77,12 @@ def step_impl(context, element_name, text_string):
     element.clear()
     element.send_keys(text_string)
 
+@when('I set the item "{element_name}" to "{text_string}"')
+def step_impl(context, element_name, text_string):
+    element_id = ITEM_PREFIX + element_name.lower()
+    element = context.driver.find_element_by_id(element_id)
+    element.clear()
+    element.send_keys(text_string)
 
 @when('I select "{text}" in the "{element_name}" dropdown')
 def step_impl(context, text, element_name):
@@ -98,9 +104,15 @@ def step_impl(context, element_name):
     element = context.driver.find_element_by_id(element_id)
     expect(element.get_attribute('value')).to_be(u'')
 
+@then('the item "{element_name}" field should be empty')
+def step_impl(context, element_name):
+    element_id = ITEM_PREFIX + element_name.lower()
+    element = context.driver.find_element_by_id(element_id)
+    expect(element.get_attribute('value')).to_be(u'')
+
 
 ##################################################################
-# These two function simulate copy and paste
+# These four functions simulate copy and paste
 ##################################################################
 @when('I copy the "{element_name}" field')
 def step_impl(context, element_name):
@@ -123,6 +135,26 @@ def step_impl(context, element_name):
     element.clear()
     element.send_keys(context.clipboard)
 
+@when('I copy the item "{element_name}" field')
+def step_impl(context, element_name):
+    element_id = ITEM_PREFIX + element_name.lower()
+    # element = context.driver.find_element_by_id(element_id)
+    element = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    context.clipboard = element.get_attribute('value')
+    logging.info('Clipboard contains: %s', context.clipboard)
+
+
+@when('I paste the item "{element_name}" field')
+def step_impl(context, element_name):
+    element_id = ITEM_PREFIX + element_name.lower()
+    # element = context.driver.find_element_by_id(element_id)
+    element = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    element.clear()
+    element.send_keys(context.clipboard)
 
 ##################################################################
 # This code works because of the following naming convention:
@@ -137,6 +169,10 @@ def step_impl(context, button):
     button_id = button.lower() + '-btn'
     context.driver.find_element_by_id(button_id).click()
 
+@when('I press the item "{button}" button')
+def step_impl(context, button):
+    button_id = button.lower() + '-item-btn'
+    context.driver.find_element_by_id(button_id).click()
 
 @then('I should see "{name}" in the results')
 def step_impl(context, name):
