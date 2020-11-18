@@ -16,7 +16,7 @@ before_install:
   - docker ps -a
 
 env:
-  - DATABASE_URI="postgres://postgres:postgres@localhost:5432/postgres/testdb"
+  - DATABASE_URI="postgres://postgres:postgres@localhost:5432/testdb"
 # command to install dependencies
 
 install:
