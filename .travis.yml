@@ -30,8 +30,8 @@ before_script:
   - curl -I http://localhost:5000/  # make sure the service is up
 
 script:
-  - nosetests
   - behave
+  - nosetests
 
 after_success:
   - codecov
