@@ -2,21 +2,16 @@ sudo: required
 
 language: python
 python:
-  - '3.7'
+  - '3.7.9'
 
 addons:
   chrome: stable
 
 services:
-  - docker
-
-before_install:
-  - docker pull postgres:alpine
-  - docker run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:alpine
-  - docker ps -a
+  - postgresql
 
 env:
-  - DATABASE_URI="postgres://postgres:postgres@localhost:5432/postgres"
+  - DATABASE_URI="postgres://postgres:postgres@localhost:5432/testdb"
 # command to install dependencies
 
 install:
@@ -24,6 +19,8 @@ install:
   - pip install -r requirements.txt
 
 before_script:
+  - psql -c "create database testdb;" -U postgres
+  - psql --version
   - chromedriver --version
   - gunicorn --log-level=info --bind=127.0.0.1:5000 service:app &  #  start a Web server in the background
   - sleep 5 # give Web server some time to bind to sockets, etc
@@ -38,3 +35,4 @@ jobs:
 
 after_success:
   - codecov
+  - pylint service
