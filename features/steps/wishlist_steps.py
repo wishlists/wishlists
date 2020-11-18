@@ -17,6 +17,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions
+from service import app
 
 WAIT_SECONDS = int(getenv('WAIT_SECONDS', '60'))
 WISHLIST_PREFIX = 'wishlist_'
@@ -50,6 +51,44 @@ def step_impl(context):
         expect(context.resp.status_code).to_equal(201)
 
 
+@given('the following items')
+def step_impl(context):
+    """ Delete all Items and load new ones """
+    headers = {'Content-Type': 'application/json'}
+    # list all of the wishlists and delete them one by one
+    context.resp = requests.get(context.base_url + '/wishlists', headers=headers)
+    expect(context.resp.status_code).to_equal(200)
+
+    wishlist_ids = {}
+
+    for wishlist in context.resp.json():
+        wishlist_ids[wishlist["name"]] = wishlist["id"]
+        items = wishlist["items"]
+        for item in items:
+            context.resp = requests.delete(
+                context.base_url + '/wishlists/' + str(wishlist["id"])
+                + '/items/' + str(item["id"]),
+                headers=headers)
+            expect(context.resp.status_code).to_equal(204)
+
+    create_url = context.base_url + '/wishlists/'
+
+    # load the database with new items for a wishlist
+
+    for row in context.table:
+        data = {
+            "wishlist_id": wishlist_ids[row['wishlist_name']],
+            "product_id": row['product_id'],
+            "product_name": row['product_name']
+        }
+
+        url = create_url + str(data["wishlist_id"]) + '/items'
+
+        payload = json.dumps(data)
+        context.resp = requests.post(url, data=payload, headers=headers)
+        expect(context.resp.status_code).to_equal(201)
+
+
 @when('I visit the "home page"')
 def step_impl(context):
     """ Make a call to the base URL """
@@ -77,12 +116,14 @@ def step_impl(context, element_name, text_string):
     element.clear()
     element.send_keys(text_string)
 
+
 @when('I set the item "{element_name}" to "{text_string}"')
 def step_impl(context, element_name, text_string):
     element_id = ITEM_PREFIX + element_name.lower()
     element = context.driver.find_element_by_id(element_id)
     element.clear()
     element.send_keys(text_string)
+
 
 @when('I select "{text}" in the "{element_name}" dropdown')
 def step_impl(context, text, element_name):
@@ -103,6 +144,7 @@ def step_impl(context, element_name):
     element_id = WISHLIST_PREFIX + element_name.lower()
     element = context.driver.find_element_by_id(element_id)
     expect(element.get_attribute('value')).to_be(u'')
+
 
 @then('the item "{element_name}" field should be empty')
 def step_impl(context, element_name):
@@ -135,6 +177,7 @@ def step_impl(context, element_name):
     element.clear()
     element.send_keys(context.clipboard)
 
+
 @when('I copy the item "{element_name}" field')
 def step_impl(context, element_name):
     element_id = ITEM_PREFIX + element_name.lower()
@@ -156,6 +199,7 @@ def step_impl(context, element_name):
     element.clear()
     element.send_keys(context.clipboard)
 
+
 ##################################################################
 # This code works because of the following naming convention:
 # The buttons have an id in the html hat is the button text
@@ -169,10 +213,12 @@ def step_impl(context, button):
     button_id = button.lower() + '-btn'
     context.driver.find_element_by_id(button_id).click()
 
+
 @when('I press the item "{button}" button')
 def step_impl(context, button):
     button_id = button.lower() + '-item-btn'
     context.driver.find_element_by_id(button_id).click()
+
 
 @then('I should see "{name}" in the results')
 def step_impl(context, name):
