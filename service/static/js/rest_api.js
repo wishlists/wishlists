@@ -89,7 +89,12 @@ $(function () {
     $("#retrieve-btn").click(function () {
 
         var wishlist_id = $("#wishlist_id").val();
-       
+
+        if(wishlist_id == null || wishlist_id.trim() === ""){
+            alert("Please Enter Wishlist id");
+            return ;
+        }
+
         var ajax = $.ajax({
             type: "GET",
             url: "/wishlists/" + wishlist_id,
@@ -118,6 +123,11 @@ $(function () {
         var name = $("#wishlist_name").val();
         var user_id = $("#wishlist_user_id").val();
         var status = $("#wishlist_status").val();
+
+        if(wishlist_id == null || wishlist_id.trim() === ""){
+            alert("Please Enter Wishlist id");
+            return ;
+        }
 
         var data = {
             "name": name,
@@ -205,6 +215,11 @@ $(function () {
     $("#delete-btn").click(function () {
 
         var wishlist_id = $("#wishlist_id").val();
+
+        if(wishlist_id == null || wishlist_id.trim() === ""){
+            alert("Please Enter Wishlist id");
+            return ;
+        }
        
         var ajax = $.ajax({
             type: "DELETE",
@@ -232,12 +247,19 @@ $(function () {
 
     $("#create-item-btn").click(function () {
 
-        var wishlist_id = parseInt($("#item_wishlist_id").val());
+        var wishlist_id = $("#item_wishlist_id").val();
         var product_id = $("#item_product_id").val();
         var product_name = $("#item_product_name").val();
 
+        if(wishlist_id == null || wishlist_id.trim() === ""
+            || product_id == null || product_id.trim() === ""
+            || product_name == null || product_name.trim() === ""){
+            alert("Wishlist ID, Product Name and Product ID are required fields");
+            return ;
+        }
+
         var data = {
-            "wishlist_id": wishlist_id,
+            "wishlist_id": parseInt(wishlist_id),
             "product_id": product_id,
             "product_name": product_name
         };
@@ -251,8 +273,10 @@ $(function () {
 
         ajax.done(function(res){
             update_item_form_data(res)
+
             $("#search_results").empty();
-            flash_message("Success")    
+
+            flash_message("Success")
         });
 
         ajax.fail(function(res){
@@ -306,12 +330,11 @@ $(function () {
 
         var ajax = $.ajax({
             type: "GET",
-            url: "/wishlists" + queryString,
-            contentType: "application/json",
-            data: ''
+            url: "/wishlists" + queryString
         })
 
         ajax.done(function(res){
+
             $("#search_results").empty();
             $("#search_results").append('<h4>Wishlists</h4>');
             $("#search_results").append('<table class="table-striped" cellpadding="10">');
@@ -363,46 +386,26 @@ $(function () {
     // ***********************************************
 
     $("#search-item-btn").click(function () {
-        
-        // $("#item_id").val(res.id);
-        // $("#item_wishlist_id").val(res.wishlist_id);
-        // $("#item_product_id").val(res.product_id);
-        // $("#item_product_name").val(res.product_name);
 
+        var wishlist_id = $("#item_wishlist_id").val();
 
-        var wishlist_id = parseInt($("#item_wishlist_id").val());
-        // var product_id = $("#item_product_id").val();
-        // var product_name = $("#item_product_name").val();
+        var item_id = $("#item_id").val();
 
-        // var queryString = ""
+        if(wishlist_id == null || wishlist_id.trim() === ""){
+            alert("Please Enter Wishlist id");
+            return ;
+        }
 
-        // if (wishlist_id) {
-        //     queryString += 'wishlist_id=' + wishlist_id
-        // }
-        // if (product_id) {
-        //     if (queryString.length > 0) {
-        //         queryString += '&product_id=' + product_id
-        //     } else {
-        //         queryString += 'product_id=' + product_id
-        //     }
-        // }
-        // if (product_name) {
-        //     if (queryString.length > 0) {
-        //         queryString += '&product_name=' + product_name
-        //     } else {
-        //         queryString += 'product_name=' + product_name
-        //     }
-        // }
-
-        var ajax = $.ajax({
+        var ajax = item_id == null || item_id.trim() === "" ? $.ajax({
             type: "GET",
-            url: "/wishlists/" + wishlist_id + "/items",
-            contentType: "application/json",
-            data: ''
-        })
+            url: "/wishlists/" + wishlist_id + "/items"
+        }) : $.ajax({
+            type: "GET",
+            url: "/wishlists/" + wishlist_id + "/items/" + item_id
+        });
+
 
         ajax.done(function(res){
-            // alert(res.toSource())
 
             addItemsTable(res, "search_results")
 
@@ -427,6 +430,14 @@ $(function () {
         header += '<th style="width:20%">Product ID</th></tr>'
         $("#" + divID + "").append(header);
         var firstItem = "";
+
+        // When a single item is returned
+        if(!Array.isArray(res)){
+            temp = [];
+            temp.push(res);
+            res = temp;
+        }
+
         for(var i = 0; i < res.length; i++) {
             var item = res[i];
             var row = "<tr><td>"+item.id+"</td><td>"+ item.wishlist_id +"</td><td>"+item.product_name+"</td><td>"+ item.product_id +"</td></tr>";
