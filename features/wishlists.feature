@@ -22,14 +22,17 @@ Scenario: The server is running
     Then I should see "Wishlist RESTful Service" in the title
     And I should not see "404 Not Found"
 
-Scenario: List all wishlists
+Scenario: List all wishlists and items
     When I visit the "Home Page"
     And I press the "Search" button
     Then I should see "electronics" in the results
     And I should see "phones" in the results
     And I should see "black_friday" in the results
+    And I should see "iMac" in the item_results
+    And I should see "laptop" in the item_results
+    And I should see "bose" in the item_results
 
-Scenario: Create and List all items of a wishlist
+Scenario: Add an item and List all items of a wishlist
     When I visit the "Home Page"
     And I press the "Search" button
     Then I should see "electronics" in the results
@@ -61,19 +64,11 @@ Scenario: Create and List all items of a wishlist
     And the item "Product_ID" field should be empty
     And the item "Product_Name" field should be empty
     When I paste the item "Wishlist_ID" field
-    And I set the item "Product_ID" to "4"
-    And I set the item "Product_Name" to "iPad"
-    And I press the item "Create" button
-    Then I should see the message "Success"
-    When I copy the item "Wishlist_ID" field
-    And I press the item "Clear" button
-    Then the item "Wishlist_ID" field should be empty
-    And the item "Product_ID" field should be empty
-    And the item "Product_Name" field should be empty
-    When I paste the item "Wishlist_ID" field
     And I press the item "Search" button
-    Then I should see "iPhone" in the results
-    And I should see "iPad" in the results
+    Then I should see "iMac" in the results
+    And I should see "laptop" in the results
+    And I should see "iPhone" in the results
+
 
 
 Scenario: Create a Wishlist
