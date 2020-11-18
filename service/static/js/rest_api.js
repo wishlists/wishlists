@@ -242,6 +242,34 @@ $(function () {
     });
 
     // ****************************************
+    // Delete an item from a Wishlist
+    // ****************************************
+
+    $("#delete-item-btn").click(function () {
+
+        var wishlist_id = parseInt($("#item_wishlist_id").val());
+        var item_id = $("#item_id").val();
+        
+        var ajax = $.ajax({
+            type: "DELETE",
+            url: "/wishlists/" + wishlist_id + "/items/" + item_id,
+            contentType: "application/json",
+            data: ''
+        });
+
+        ajax.done(function(res){
+            clear_wishlist_form_data()
+            $("#search_results").empty();
+            flash_message("Item has been deleted")    
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    });
+
+
+    // ****************************************
     // Add an item to a Wishlist
     // ****************************************
 
