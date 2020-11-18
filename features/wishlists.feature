@@ -28,7 +28,7 @@ Scenario: List all wishlists
     And I should see "phones" in the results
     And I should see "black_friday" in the results
 
-Scenario: List all items
+Scenario: List all items of a wishlist
     When I visit the "Home Page"
     And I press the "Search" button
     Then I should see "electronics" in the results
