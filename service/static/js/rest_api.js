@@ -227,6 +227,40 @@ $(function () {
     });
 
     // ****************************************
+    // Add an item to a Wishlist
+    // ****************************************
+
+    $("#create-item-btn").click(function () {
+
+        var wishlist_id = parseInt($("#item_wishlist_id").val());
+        var product_id = $("#item_product_id").val();
+        var product_name = $("#item_product_name").val();
+
+        var data = {
+            "wishlist_id": wishlist_id,
+            "product_id": product_id,
+            "product_name": product_name
+        };
+        
+        var ajax = $.ajax({
+            type: "POST",
+            url: "/wishlists/" + wishlist_id + "/items",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            update_item_form_data(res)
+            $("#search_results").empty();
+            flash_message("Success")    
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    });
+
+    // ****************************************
     // Clear the Wishlist form
     // ****************************************
 
@@ -244,9 +278,9 @@ $(function () {
         clear_item_form_data()
     });
 
-    // ****************************************
+    // ******************************************
     // Search for a Wishlist (list all wishlists)
-    // ****************************************
+    // ******************************************
 
     $("#search-btn").click(function () {
 
@@ -324,51 +358,51 @@ $(function () {
 
     });
 
-    // ****************************************
-    // Search for an Item (list all items)
-    // ****************************************
+    // ***********************************************
+    // Search for Wishlist Items (list wishlist items)
+    // ***********************************************
 
     $("#search-item-btn").click(function () {
         
-        $("#item_id").val(res.id);
-        $("#item_wishlist_id").val(res.wishlist_id);
-        $("#item_product_id").val(res.product_id);
-        $("#item_product_name").val(res.product_name);
+        // $("#item_id").val(res.id);
+        // $("#item_wishlist_id").val(res.wishlist_id);
+        // $("#item_product_id").val(res.product_id);
+        // $("#item_product_name").val(res.product_name);
 
 
-        var wishlist_id = $("#item_wishlist_id").val();
-        var product_id = $("#item_product_id").val();
-        var product_name = $("#item_product_name").val();
+        var wishlist_id = parseInt($("#item_wishlist_id").val());
+        // var product_id = $("#item_product_id").val();
+        // var product_name = $("#item_product_name").val();
 
-        var queryString = ""
+        // var queryString = ""
 
-        if (wishlist_id) {
-            queryString += 'wishlist_id=' + wishlist_id
-        }
-        if (product_id) {
-            if (queryString.length > 0) {
-                queryString += '&product_id=' + product_id
-            } else {
-                queryString += 'product_id=' + product_id
-            }
-        }
-        if (product_name) {
-            if (queryString.length > 0) {
-                queryString += '&product_name=' + product_name
-            } else {
-                queryString += 'product_name=' + product_name
-            }
-        }
+        // if (wishlist_id) {
+        //     queryString += 'wishlist_id=' + wishlist_id
+        // }
+        // if (product_id) {
+        //     if (queryString.length > 0) {
+        //         queryString += '&product_id=' + product_id
+        //     } else {
+        //         queryString += 'product_id=' + product_id
+        //     }
+        // }
+        // if (product_name) {
+        //     if (queryString.length > 0) {
+        //         queryString += '&product_name=' + product_name
+        //     } else {
+        //         queryString += 'product_name=' + product_name
+        //     }
+        // }
 
         var ajax = $.ajax({
             type: "GET",
-            url: "/wishlists?" + queryString,
+            url: "/wishlists/" + wishlist_id + "/items",
             contentType: "application/json",
             data: ''
         })
 
         ajax.done(function(res){
-            //alert(res.toSource())
+            // alert(res.toSource())
 
             addItemsTable(res, "search_results")
 
