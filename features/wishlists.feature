@@ -181,7 +181,7 @@ Scenario: Delete a Wishlist
     And I should see "phones" in the results
     And I should see "black_friday" in the results
 
-Scenario: Delete an items of a wishlist
+Scenario: Delete an item of a wishlist
     When I visit the "Home Page"
     And I press the "Search" button
     Then I should see "electronics" in the results
@@ -218,14 +218,7 @@ Scenario: Delete an items of a wishlist
 
 Scenario: Update status of a Wishlist
     When I visit the "Home Page"
-    And I press the "Search" button
-    Then I should see "phones" in the results
-    And I should see "black_friday" in the results
-    When I press the "Clear" button
-    Then the "Id" field should be empty
-    And the "Name" field should be empty
-    And the "User_ID" field should be empty
-    When I set the "name" to "electronics"
+    And I set the "name" to "electronics"
     And I press the "Search" button
     Then I should see "electronics" in the "Name" field
     And I should see "101" in the "User_ID" field
