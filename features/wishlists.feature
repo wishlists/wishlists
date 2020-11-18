@@ -55,7 +55,7 @@ Scenario: Add an item and List all items of a wishlist
     When I press the "Item-Page" button
     And I paste the item "Wishlist_ID" field
     And I set the item "Product_ID" to "3"
-    And I set the item "Product_Name" to "iPhone"
+    And I set the item "Product_Name" to "iPad"
     And I press the item "Create" button
     Then I should see the message "Success"
     When I copy the item "Wishlist_ID" field
@@ -67,7 +67,7 @@ Scenario: Add an item and List all items of a wishlist
     And I press the item "Search" button
     Then I should see "iMac" in the results
     And I should see "laptop" in the results
-    And I should see "iPhone" in the results
+    And I should see "iPad" in the results
 
 
 
@@ -191,10 +191,10 @@ Scenario: Delete an items of a wishlist
     Then the "Id" field should be empty
     And the "Name" field should be empty
     And the "User_ID" field should be empty
-    When I set the "name" to "electronics"
+    When I set the "name" to "black_friday"
     And I press the "Search" button
-    Then I should see "electronics" in the "Name" field
-    And I should see "101" in the "User_ID" field
+    Then I should see "black_friday" in the "Name" field
+    And I should see "102" in the "User_ID" field
     And I should see "Enabled" in the "status" dropdown
     When I copy the "Id" field
     And I press the "Clear" button
@@ -203,30 +203,18 @@ Scenario: Delete an items of a wishlist
     And the "User_ID" field should be empty
     When I press the "Item-Page" button
     And I paste the item "Wishlist_ID" field
-    And I set the item "Product_ID" to "1"
-    And I set the item "Product_Name" to "iPhone"
-    And I press the item "Create" button
-    Then I should see the message "Success"
-    When I copy the item "Wishlist_ID" field
-    And I press the item "Clear" button
-    Then the item "Wishlist_Id" field should be empty
-    And the item "Product_ID" field should be empty
-    And the item "Product_Name" field should be empty
-    When I paste the item "Wishlist_ID" field
-    And I set the item "Product_ID" to "2"
-    And I set the item "Product_Name" to "iPad"
-    And I press the item "Create" button
-    Then I should see the message "Success"
+    And I press the item "Search" button
+    Then I should see "bose" in the results
     When I press the item "Delete" button
     Then I should see the message "Item has been deleted"
-    When I press the item "Clear" button
+    When I copy the item "Wishlist_ID" field
+    And I press the item "Clear" button
     Then the item "Wishlist_ID" field should be empty
     And the item "Product_ID" field should be empty
     And the item "Product_Name" field should be empty
     When I paste the item "Wishlist_ID" field
     And I press the item "Search" button
-    Then I should see "iPhone" in the results
-    And I should not see "iPad" in the results
+    Then I should not see "bose" in the results
 
 Scenario: Update status of a Wishlist
     When I visit the "Home Page"
