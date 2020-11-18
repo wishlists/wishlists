@@ -17,6 +17,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions
+from service import app
 
 WAIT_SECONDS = int(getenv('WAIT_SECONDS', '60'))
 WISHLIST_PREFIX = 'wishlist_'
@@ -47,6 +48,44 @@ def step_impl(context):
 
         payload = json.dumps(data)
         context.resp = requests.post(create_url, data=payload, headers=headers)
+        expect(context.resp.status_code).to_equal(201)
+
+
+@given('the following items')
+def step_impl(context):
+    """ Delete all Items and load new ones """
+    headers = {'Content-Type': 'application/json'}
+    # list all of the wishlists and delete them one by one
+    context.resp = requests.get(context.base_url + '/wishlists', headers=headers)
+    expect(context.resp.status_code).to_equal(200)
+
+    wishlist_ids = {}
+
+    for wishlist in context.resp.json():
+        wishlist_ids[wishlist["name"]] = wishlist["id"]
+        items = wishlist["items"]
+        for item in items:
+            context.resp = requests.delete(
+                context.base_url + '/wishlists/' + str(wishlist["id"])
+                + '/items/' + str(item["id"]),
+                headers=headers)
+            expect(context.resp.status_code).to_equal(204)
+
+    create_url = context.base_url + '/wishlists/'
+
+    # load the database with new items for a wishlist
+
+    for row in context.table:
+        data = {
+            "wishlist_id": wishlist_ids[row['wishlist_name']],
+            "product_id": row['product_id'],
+            "product_name": row['product_name']
+        }
+
+        url = create_url + str(data["wishlist_id"]) + '/items'
+
+        payload = json.dumps(data)
+        context.resp = requests.post(url, data=payload, headers=headers)
         expect(context.resp.status_code).to_equal(201)
 
 
