@@ -21,12 +21,15 @@ Scenario: The server is running
     Then I should see "Wishlist RESTful Service" in the title
     And I should not see "404 Not Found"
 
-Scenario: List all wishlists
+Scenario: List all wishlists and items
     When I visit the "Home Page"
     And I press the "Search" button
     Then I should see "electronics" in the results
     And I should see "phones" in the results
     And I should see "black_friday" in the results
+    And I should see "iMac" in the item_results
+    And I should see "laptop" in the item_results
+    And I should see "bose" in the item_results
 
 Scenario: Create and List all items of a wishlist
     When I visit the "Home Page"
