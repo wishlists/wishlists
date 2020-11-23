@@ -108,13 +108,13 @@ class TestWishlistService(unittest.TestCase):
         return wishlist, items
 
     def test_index(self):
-        """ Test the Home Page """
+        """ Test the Home UI Page for wishlist"""
         resp = self.app.get('/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertIn(b"Wishlist RESTful Service", resp.data)
 
     def test_homepage(self):
-        """ Test the Home Page """
+        """ Test the Home UI Page for items"""
         resp = self.app.get('/items.html')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertIn(b"Wishlist RESTful Service (Items)", resp.data)
@@ -676,7 +676,7 @@ class TestWishlistService(unittest.TestCase):
 
     def test_delete_item_if_item_not_found(self):
         """ Test delete_item if item is not found """
-        wishlist, items = self._create_items(1)
+        wishlist, _ = self._create_items(1)
         item = ItemFactory()
         resp = self.app.delete(
             "/wishlists/{}/items/{}".format(wishlist.id, item.id),

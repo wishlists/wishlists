@@ -29,6 +29,7 @@ PUT /wishlists/{id}/disabled - disables a wishlist record in the database
 from flask import jsonify, request, url_for, make_response, abort
 from flask_api import status  # HTTP Status Codes
 from werkzeug.exceptions import NotFound
+from flask_restplus import Api, Resource, fields, reqparse, inputs
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
@@ -36,6 +37,54 @@ from service.models import Wishlist, Item, DataValidationError
 
 # Import Flask application
 from . import app
+
+######################################################################
+# Configure Swagger before initializing it
+######################################################################
+api = Api(app,
+          version='1.0.0',
+          title='Wishlist REST API Service',
+          description='This is a wishlist service for an e-commerce',
+          default='wishlists',
+          default_label='Wishlist operations',
+          doc='/apidocs',  # default also could use doc='/apidocs/'
+          )
+
+# Define the model so that the docs reflect what can be sent
+item_model = api.model('Item', {
+    'id': fields.String(readOnly=True,
+                        description='The unique id assigned internally by service'),
+    'wishlist_id': fields.String(required=True,
+                                 description='Wishlist id of the item'),
+    'product_id': fields.String(required=True,
+                                description='Id of the item'),
+    'product_name': fields.String(required=True,
+                                  description='Name of the item')
+})
+
+wishlist_model = api.model('Wishlist', {
+    'id': fields.Integer(readOnly=True,
+                         description='The unique id assigned internally by service'),
+    'name': fields.String(required=True,
+                          description='The name of the Wishlist'),
+    'user_id': fields.Integer(required=True,
+                              description='User id of the user to whom the wishlist belongs'),
+    'status': fields.Boolean(required=False,
+                             description='Status of the wishlist'),
+    'items': fields.List(fields.Nested(item_model, required=True),
+                         required=True,
+                         description='List of items in the wishlist')
+})
+
+create_model = api.model('Wishlist', {
+    'name': fields.String(required=True,
+                          description='The name of the Wishlist'),
+    'user_id': fields.Integer(required=True,
+                              description='User id of the user to whom the wishlist belongs'),
+    'items': fields.List(fields.Nested(item_model, required=True),
+                         required=True,
+                         description='List of items in the wishlist')
+})
 
 
 @app.route('/items.html')
@@ -48,6 +97,12 @@ def items():
 def homepage():
     """ Loads the homepage (wishlist) page """
     return app.send_static_file('index.html')
+
+
+# query string arguments
+wishlist_args = reqparse.RequestParser()
+wishlist_args.add_argument('name', type=str, required=False, help='List wishlists by name')
+wishlist_args.add_argument('user_id', type=int, required=False, help='List wishlists by user_id')
 
 
 ######################################################################
@@ -130,32 +185,81 @@ def internal_server_error(error):
 
 
 ######################################################################
-# LIST ALL WISHLISTS
+#  PATH: /wishlists
 ######################################################################
-@app.route("/wishlists", methods=["GET"])
-def list_wishlists():
-    """ Returns all of the Wishlists """
-    app.logger.info("Request for wishlist list")
-    if request.args:
-        user_id = request.args.get("user_id")
-        name = request.args.get("name")
-        if user_id:
-            try:
-                user_id = int(user_id)
-            except ValueError:
-                raise DataValidationError("user_id should be an integer")
-            wishlists = Wishlist.find_by_user_id(user_id)
-        elif name:
-            name = name.strip("\"\'")
-            wishlists = Wishlist.find_by_name(name)
-        else:
-            raise DataValidationError("query parameter does not exist")
-    else:
-        wishlists = Wishlist.all()
+@api.route('/wishlists', strict_slashes=False)
+class WishlistCollection(Resource):
 
-    results = [wishlist.serialize() for wishlist in wishlists]
-    app.logger.info("Returning %d wishlists", len(results))
-    return make_response(jsonify(results), status.HTTP_200_OK)
+    ######################################################################
+    # LIST ALL WISHLISTS
+    ######################################################################
+    @api.doc('list_wishlists')
+    @api.expect(wishlist_args, validate=True)
+    @api.marshal_list_with(wishlist_model)
+    def get(self):
+        """ Returns all of the Wishlists """
+        app.logger.info("Request for wishlist list")
+        if request.args:
+            user_id = request.args.get("user_id")
+            name = request.args.get("name")
+            if user_id:
+                try:
+                    user_id = int(user_id)
+                except ValueError:
+                    raise DataValidationError("user_id should be an integer")
+                wishlists = Wishlist.find_by_user_id(user_id)
+            elif name:
+                name = name.strip("\"\'")
+                wishlists = Wishlist.find_by_name(name)
+            else:
+                raise DataValidationError("query parameter does not exist")
+        else:
+            wishlists = Wishlist.all()
+
+        results = [wishlist.serialize() for wishlist in wishlists]
+        app.logger.info("Returning %d wishlists", len(results))
+        app.logger.debug("Results :%s", results)
+        return results, status.HTTP_200_OK
+
+    ######################################################################
+    # ADD A NEW WISHLIST
+    ######################################################################
+    @api.doc('create_wishlist')
+    @api.expect(create_model)
+    @api.response(400, 'The posted data was not valid')
+    @api.response(201, 'Wishlist created successfully')
+    @api.marshal_with(wishlist_model, code=201)
+    def post(self):
+        """
+        Creates a Wishlist
+        This endpoint will create a Wishlist based the data in the posted body
+        """
+        app.logger.info("Request to create a wishlist")
+        check_content_type("application/json")
+        wishlist = Wishlist()
+        app.logger.debug('Payload = %s', api.payload)
+        wishlist.deserialize(api.payload)
+        app.logger.debug('Deserialized wishlist = %s', wishlist)
+        data = api.payload
+
+        try:
+            items = []
+            for item in data["items"]:
+                new_item = Item()
+                items.append(new_item.deserialize(item))
+            wishlist.items = items
+        except KeyError as error:
+            raise DataValidationError("Invalid Wishlist: missing " +
+                                      error.args[0])
+
+        app.logger.debug('Deserialized wishlist after adding items= %s',
+                         wishlist)
+
+        wishlist.create()
+        message = wishlist.serialize()
+        location_url = url_for("get_wishlists",
+                               wishlist_id=wishlist.id, _external=True)
+        return message, status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
@@ -170,40 +274,6 @@ def get_wishlists(wishlist_id):
     app.logger.info("Request for wishlist with id: %s", wishlist_id)
     wishlist = Wishlist.find_or_404(wishlist_id)
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
-
-
-######################################################################
-# ADD A NEW WISHLIST
-######################################################################
-@app.route("/wishlists", methods=["POST"])
-def create_wishlists():
-    """
-    Creates a Wishlist
-    This endpoint will create a Wishlist based the data in the posted body
-    """
-    app.logger.info("Request to create a wishlist")
-    check_content_type("application/json")
-    wishlist = Wishlist()
-    wishlist.deserialize(request.get_json())
-    data = request.get_json()
-
-    try:
-        items = []
-        for item in data["items"]:
-            new_item = Item()
-            items.append(new_item.deserialize(item))
-        wishlist.items = items
-    except KeyError as error:
-        raise DataValidationError("Invalid Wishlist: missing " +
-                                  error.args[0])
-
-    wishlist.create()
-    message = wishlist.serialize()
-    location_url = url_for("get_wishlists",
-                           wishlist_id=wishlist.id, _external=True)
-    return make_response(
-        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-    )
 
 
 ######################################################################
