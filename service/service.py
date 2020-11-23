@@ -24,6 +24,12 @@ PUT /wishlists/{id} - updates a wishlist record in the database
 DELETE /wishlists/{id} - deletes a wishlist record in the database
 PUT /wishlists/{id}/enabled - enables a wishlist record in the database
 PUT /wishlists/{id}/disabled - disables a wishlist record in the database
+GET /wishlists/{id}/items - Returns a list all the items of the given wishlist
+POST /wishlists/{wishlist_id}/items - Creates an item in the given wishlist
+GET /wishlists/{wishlist_id}/items/{item_id} - Returns an item in the given
+                                                wishlist id and item id
+DELETE /wishlists/{wishlist_id}/items/{item_id} - Deletes an item with item id
+                                                 in the given wishlist id
 """
 
 from flask import jsonify, request, url_for, make_response, abort
@@ -38,6 +44,7 @@ from service.models import Wishlist, Item, DataValidationError
 # Import Flask application
 from . import app
 
+
 @app.route('/items.html')
 def items():
     """ Loads the items.html page """
@@ -48,6 +55,7 @@ def items():
 def homepage():
     """ Loads the homepage (wishlist) page """
     return app.send_static_file('index.html')
+
 
 ######################################################################
 # Configure Swagger before initializing it
@@ -96,7 +104,6 @@ create_model = api.model('Wishlist', {
                          required=True,
                          description='List of items in the wishlist')
 })
-
 
 # query string arguments
 wishlist_args = reqparse.RequestParser()
