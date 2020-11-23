@@ -259,10 +259,8 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code,
                          status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
         data = resp.get_json()
-        self.assertEqual(data['error'], "Unsupported media type")
         self.assertEqual(data['message'],
-                         ('415 Unsupported Media Type: Content-Type '
-                          'must be application/json'))
+                         'Content-Type must be application/json')
 
     def test_add_item_to_wishlist(self):
         """ Add an item to an existing wishlist """

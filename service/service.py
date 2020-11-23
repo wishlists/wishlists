@@ -38,6 +38,17 @@ from service.models import Wishlist, Item, DataValidationError
 # Import Flask application
 from . import app
 
+@app.route('/items.html')
+def items():
+    """ Loads the items.html page """
+    return app.send_static_file('items.html')
+
+
+@app.route('/')
+def homepage():
+    """ Loads the homepage (wishlist) page """
+    return app.send_static_file('index.html')
+
 ######################################################################
 # Configure Swagger before initializing it
 ######################################################################
@@ -85,18 +96,6 @@ create_model = api.model('Wishlist', {
                          required=True,
                          description='List of items in the wishlist')
 })
-
-
-@app.route('/items.html')
-def items():
-    """ Loads the items.html page """
-    return app.send_static_file('items.html')
-
-
-@app.route('/')
-def homepage():
-    """ Loads the homepage (wishlist) page """
-    return app.send_static_file('index.html')
 
 
 # query string arguments
