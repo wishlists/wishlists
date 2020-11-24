@@ -3,6 +3,7 @@ Flask==1.1.1
 Flask-API==1.1
 Flask-SQLAlchemy==2.4.1
 psycopg2-binary==2.8.4
+flask-restplus==0.13.0
 
 # Runtime
 gunicorn==20.0.2
@@ -27,3 +28,6 @@ behave==1.2.6
 selenium==3.141.0
 compare==0.2b0
 requests==2.24.0
+
+# Locked sub-dependencies
+Werkzeug==0.16.1
