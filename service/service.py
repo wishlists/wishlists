@@ -71,11 +71,11 @@ api = Api(app,
 
 # Define the model so that the docs reflect what can be sent
 item_model = api.model('Item', {
-    'id': fields.String(readOnly=True,
+    'id': fields.Integer(readOnly=True,
                         description='The unique id assigned internally by service'),
-    'wishlist_id': fields.String(required=True,
+    'wishlist_id': fields.Integer(required=True,
                                  description='Wishlist id of the item'),
-    'product_id': fields.String(required=True,
+    'product_id': fields.Integer(required=True,
                                 description='Id of the item'),
     'product_name': fields.String(required=True,
                                   description='Name of the item')
