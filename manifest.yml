@@ -4,7 +4,7 @@ applications:
 - name: nyu-wishlist-service-f20
   path: .
   instances: 2
-  memory: 64M
+  memory: 256M
   host: nyu-wishlist-service-f20
   domain: us-south.cf.appdomain.cloud
   disk_quota: 1024M
