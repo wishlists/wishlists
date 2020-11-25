@@ -364,7 +364,7 @@ class ItemCollection(Resource):
     @api.response(404, 'Wishlist not found')
     @api.marshal_with(item_model)
     def get(self, wishlist_id):
-        """ Returns all of the items for a Wishlist """
+        """ Returns all of the items in a Wishlist """
         app.logger.info("Request for items in the wishlist with id %s...", wishlist_id)
         wishlist = Wishlist.find_or_404(wishlist_id)
         results = [item.serialize() for item in wishlist.items]
