@@ -349,7 +349,7 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         app_type = "application/json"
         self.assertEqual(data["message"],
-                         "415 Unsupported Media Type: Content-Type must be {}"
+                         "Content-Type must be {}"
                          .format(app_type))
 
     def test_add_item_to_wishlist_bad_request(self):
@@ -489,9 +489,12 @@ class TestWishlistService(unittest.TestCase):
         resp = self.app.get("/wishlists/0/items")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
-        self.assertEqual(data['error'], "Not Found")
-        self.assertEqual(data['message'], ("404 Not Found:"
-                                           " Wishlist '0' was not found."))
+        self.assertEqual(data['message'],
+                         "Wishlist '0' was not found. " 
+                         "You have requested this URI [/wishlists/0/items] "
+                         "but did you mean /wishlists/<int:wishlist_id>/items "
+                         "or /wishlists/<int:wishlist_id> "
+                         "or /wishlists/500 ?")
 
     def test_update_existing_wishlist(self):
         """ Update an existing Wishlist """
