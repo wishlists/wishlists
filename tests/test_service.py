@@ -616,9 +616,14 @@ class TestWishlistService(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
-        self.assertEqual(data["message"],
-                         "404 Not Found: Wishlist '{}' was not found."
-                         .format(test_wishlist.id))
+        self.assertEqual(data['message'],
+                         "Wishlist '{}' was not found. "
+                         .format(test_wishlist.id)+
+                         "You have requested this URI [/wishlists/{}/enabled] "
+                         .format(test_wishlist.id)+
+                         "but did you mean /wishlists/<int:wishlist_id>/enabled"
+                         " or /wishlists/<int:wishlist_id>/disabled "
+                         "or /wishlists/<int:wishlist_id> ?")
 
     def test_disable_existing_wishlist(self):
         """ Disable an existing Wishlist """
@@ -645,9 +650,14 @@ class TestWishlistService(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
-        self.assertEqual(data["message"],
-                         "404 Not Found: Wishlist '{}' was not found."
-                         .format(test_wishlist.id))
+        self.assertEqual(data['message'],
+                         "Wishlist '{}' was not found. "
+                         .format(test_wishlist.id)+
+                         "You have requested this URI [/wishlists/{}/disabled] "
+                         .format(test_wishlist.id)+
+                         "but did you mean /wishlists/<int:wishlist_id>/disabled"
+                         " or /wishlists/<int:wishlist_id>/enabled "
+                         "or /wishlists/<int:wishlist_id>/items ?")
 
     def test_delete_item_from_wishlist(self):
         """ Delete a single item """
