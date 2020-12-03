@@ -489,7 +489,7 @@ class EnableResource(Resource):
 ######################################################################
 @api.route('/wishlists/<int:wishlist_id>/disabled', strict_slashes=False)
 @api.param('wishlist_id', 'The Wishlist identifier')
-class EnableResource(Resource):
+class DisableResource(Resource):
     """ Disable actions on a Wishlist """
     @api.doc('disable_wishlists')
     @api.response(404, 'Wishlist not found')
