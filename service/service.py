@@ -461,43 +461,51 @@ def delete_item_from_wishlist(wishlist_id, item_id):
 
 
 ######################################################################
-# ENABLE ACTION ON A WISHLIST
+# PATH: /wishlists/{wishlist_id}/enabled
 ######################################################################
-@app.route("/wishlists/<int:wishlist_id>/enabled", methods=["PUT"])
-def enable_wishlist(wishlist_id):
-    """
-    Enable a Wishlist
-    This endpoint will enable a Wishlist based the id specified in the path
-    """
-    app.logger.info("Request to enable wishlist with id: %s", wishlist_id)
-    check_content_type("application/json")
-    wishlist = Wishlist.find_or_404(wishlist_id)
-    wishlist.id = wishlist_id
-    wishlist.status = True
-    wishlist.save()
-    message = wishlist.serialize()
-    app.logger.info("Wishlist with ID [%s] enabled.", wishlist_id)
-    return make_response(jsonify(message), status.HTTP_200_OK)
+@api.route('/wishlists/<int:wishlist_id>/enabled', strict_slashes=False)
+@api.param('wishlist_id', 'The Wishlist identifier')
+class EnableResource(Resource):
+    """ Enable actions on a Wishlist """
+    @api.doc('enable_wishlists')
+    @api.response(404, 'Wishlist not found')
+    def put(self, wishlist_id):
+        """
+        Enable a Wishlist
+        This endpoint will enable a Wishlist based the id specified in the path
+        """
+        app.logger.info("Request to enable wishlist with id: %s", wishlist_id)
+        wishlist = Wishlist.find_or_404(wishlist_id)
+        wishlist.id = wishlist_id
+        wishlist.status = True
+        wishlist.save()
+        message = wishlist.serialize()
+        app.logger.info("Wishlist with ID [%s] enabled.", wishlist_id)
+        return message, status.HTTP_200_OK
 
 
 ######################################################################
-# DISABLE ACTION ON A WISHLIST
+# PATH: /wishlists/{wishlist_id}/disabled
 ######################################################################
-@app.route("/wishlists/<int:wishlist_id>/disabled", methods=["PUT"])
-def disable_wishlist(wishlist_id):
-    """
-    Disable a Wishlist
-    This endpoint will disable a Wishlist based the id specified in the path
-    """
-    app.logger.info("Request to disable wishlist with id: %s", wishlist_id)
-    check_content_type("application/json")
-    wishlist = Wishlist.find_or_404(wishlist_id)
-    wishlist.id = wishlist_id
-    wishlist.status = False
-    wishlist.save()
-    message = wishlist.serialize()
-    app.logger.info("Wishlist with ID [%s] disabled.", wishlist_id)
-    return make_response(jsonify(message), status.HTTP_200_OK)
+@api.route('/wishlists/<int:wishlist_id>/disabled', strict_slashes=False)
+@api.param('wishlist_id', 'The Wishlist identifier')
+class DisableResource(Resource):
+    """ Disable actions on a Wishlist """
+    @api.doc('disable_wishlists')
+    @api.response(404, 'Wishlist not found')
+    def put(self, wishlist_id):
+        """
+        Disable a Wishlist
+        This endpoint will disable a Wishlist based the id specified in the path
+        """
+        app.logger.info("Request to disable wishlist with id: %s", wishlist_id)
+        wishlist = Wishlist.find_or_404(wishlist_id)
+        wishlist.id = wishlist_id
+        wishlist.status = False
+        wishlist.save()
+        message = wishlist.serialize()
+        app.logger.info("Wishlist with ID [%s] disabled.", wishlist_id)
+        return message, status.HTTP_200_OK
 
 
 ######################################################################
