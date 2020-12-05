@@ -401,7 +401,7 @@ class ItemCollection(Resource):
 
         wishlist.save()
         message = new_item.serialize()
-        location_url = url_for("get_item_from_wishlist",
+        location_url = url_for("item_resource",
                             wishlist_id=wishlist.id,
                             item_id=new_item.id,
                             _external=True)
@@ -412,9 +412,9 @@ class ItemCollection(Resource):
 #  PATH: /wishlists/<wishlist_id>/items/<item_id>
 ######################################################################
 @api.route('/wishlists/<int:wishlist_id>/items/<int:item_id>', strict_slashes=False)
-@api.doc(params={'wishlist_id': 'The wishlist identifier', 'item_id': 'The wishlist item identifier'})
-# @api.param('wishlist_id', 'The wishlist identifier')
-# @api.param('item_id', 'The wishlist item identifier')
+# @api.doc(params={'wishlist_id': 'The wishlist identifier', 'item_id': 'The wishlist item identifier'})
+@api.param('wishlist_id', 'The wishlist identifier')
+@api.param('item_id', 'The wishlist item identifier')
 class ItemResource(Resource):
     """
     ItemResource class
@@ -427,8 +427,7 @@ class ItemResource(Resource):
     ######################################################################
     @api.doc('get_item_from_wishlist')
     @api.response(404,'Item or wishlist not found')
-    @api.marshal_with(item_model)
-    
+    # @api.marshal_with(item_model)
     def get(self, wishlist_id, item_id):
         """
         Gets an item from a Wishlist
