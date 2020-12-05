@@ -401,10 +401,10 @@ class ItemCollection(Resource):
 
         wishlist.save()
         message = new_item.serialize()
-        location_url = url_for("item_resource",
-                            wishlist_id=wishlist.id,
-                            item_id=new_item.id,
-                            _external=True)
+        location_url = api.url_for(ItemResource,
+                                wishlist_id=wishlist.id,
+                                item_id=new_item.id,
+                                _external=True)
         return message, status.HTTP_201_CREATED, {"Location": location_url}
 
 
