@@ -326,9 +326,12 @@ class TestWishlistService(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
-        self.assertEqual(data["message"],
-                         "404 Not Found: Item with id '{}' was not found."
-                         .format(55000))
+        self.assertEqual(data['message'],
+                         "Item with id '55000' was not found. " 
+                         "You have requested this URI [/wishlists/1/items/55000] "
+                         "but did you mean /wishlists/<int:wishlist_id>/items "
+                         "or /wishlists/500 "
+                         "or /wishlists/<int:wishlist_id>/disabled ?")
 
     def test_add_item_to_wishlist_unsupported_media_type(self):
         """ Test add item to a wishlist if unsupported media type """

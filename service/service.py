@@ -401,63 +401,80 @@ class ItemCollection(Resource):
 
         wishlist.save()
         message = new_item.serialize()
-        location_url = url_for("get_item_from_wishlist",
-                            wishlist_id=wishlist.id,
-                            item_id=new_item.id,
-                            _external=True)
+        location_url = api.url_for(ItemResource,
+                                wishlist_id=wishlist.id,
+                                item_id=new_item.id,
+                                _external=True)
         return message, status.HTTP_201_CREATED, {"Location": location_url}
 
 
 ######################################################################
-# GET ITEM FROM A WISHLIST
+#  PATH: /wishlists/<wishlist_id>/items/<item_id>
 ######################################################################
-@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])
-def get_item_from_wishlist(wishlist_id, item_id):
+@api.route('/wishlists/<int:wishlist_id>/items/<int:item_id>', strict_slashes=False)
+# @api.doc(params={'wishlist_id': 'The wishlist identifier', 'item_id': 'The wishlist item identifier'})
+@api.param('wishlist_id', 'The wishlist identifier')
+@api.param('item_id', 'The wishlist item identifier')
+class ItemResource(Resource):
     """
-    Gets an item from a Wishlist
-    This endpoint will return an Item based on it's id
+    ItemResource class
+    Allows the following operation on an item
+    GET - Returns an Item with the Wishlist id and Item id
+    DELETE -  Delete an Item with the Wishlist id and Item id
     """
-    app.logger.info("Request to get an item from a wishlist")
+    ######################################################################
+    # GET ITEM FROM A WISHLIST
+    ######################################################################
+    @api.doc('get_item_from_wishlist')
+    @api.response(404,'Item or wishlist not found')
+    # @api.marshal_with(item_model)
+    def get(self, wishlist_id, item_id):
+        """
+        Gets an item from a Wishlist
+        This endpoint will return an Item based on it's id
+        """
+        app.logger.info("Request to get an item from a wishlist")
 
-    wishlist = Wishlist.find_or_404(wishlist_id)
+        wishlist = Wishlist.find_or_404(wishlist_id)
 
-    get_item = None
-
-    for item in wishlist.items:
-        if item.id == item_id:
-            get_item = item
-            break
-
-    if get_item is None:
-        raise NotFound("Item with id '{}' was not found.".format(item_id))
-
-    message = get_item.serialize()
-    return make_response(jsonify(message), status.HTTP_200_OK)
-
-
-######################################################################
-# DELETE ITEM FROM A WISHLIST
-######################################################################
-@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
-def delete_item_from_wishlist(wishlist_id, item_id):
-    """
-    Deletes an item from a Wishlist
-    This endpoint will return an Item based on its id
-    """
-    app.logger.info("Request to delete an item from a wishlist")
-    wishlist = Wishlist.find(wishlist_id)
-    if wishlist:
         get_item = None
+
         for item in wishlist.items:
             if item.id == item_id:
                 get_item = item
                 break
 
-        if get_item:
-            get_item.delete()
+        if get_item is None:
+            api.abort(status.HTTP_404_NOT_FOUND, "Item with id '{}' was not found.".format(item_id))
 
-    app.logger.info("Item with ID [%s] was deleted.", wishlist_id)
-    return make_response("", status.HTTP_204_NO_CONTENT)
+        message = get_item.serialize()
+        return message, status.HTTP_200_OK
+
+
+    ######################################################################
+    # DELETE ITEM FROM A WISHLIST
+    ######################################################################
+    @api.doc('delete_item_from_wishlist')
+    @api.response(204,'Item has been deleted')
+    def delete(self, wishlist_id, item_id):
+        """
+        Deletes an item from a Wishlist
+        This endpoint will return an Item based on its id
+        """
+        app.logger.info("Request to delete an item from a wishlist")
+        wishlist = Wishlist.find(wishlist_id)
+        if wishlist:
+            get_item = None
+            for item in wishlist.items:
+                if item.id == item_id:
+                    get_item = item
+                    break
+
+            if get_item:
+                get_item.delete()
+
+        app.logger.info("Item with ID [%s] was deleted.", item_id)
+        return '', status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
