@@ -66,7 +66,7 @@ api = Api(app,
           description='This is a wishlist service for an e-commerce',
           default='wishlists',
           default_label='Wishlist operations',
-          doc='/apidocs',  # default also could use doc='/apidocs/'
+          doc='/apidocs/index.html',  # default also could use doc='/apidocs/index.html'
           )
 
 # Define the model so that the docs reflect what can be sent
