@@ -8,7 +8,6 @@ The wishlists resource allows customers to create a collection of products that 
 ## LIVE URL
 This service is currently deployed live on IBM cloud. Check it out!
 
-This service is currently deployed live on IBM cloud. Check it out!  
 - App &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp; - https://nyu-wishlist-service-f20.us-south.cf.appdomain.cloud  
 - dev  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp; - https://nyu-wishlist-service-f20-dev.us-south.cf.appdomain.cloud  
 - swagger docs prod - http://nyu-wishlist-service-f20.us-south.cf.appdomain.cloud/apidocs/index.html  
