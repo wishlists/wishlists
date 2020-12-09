@@ -228,7 +228,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
         self.assertEqual(data['message'],
-                         "Wishlist with id '0' was not found. " 
+                         "Wishlist with id '0' was not found. "
                          "You have requested this URI [/wishlists/0] "
                          "but did you mean /wishlists/<int:wishlist_id> "
                          "or /wishlists/500 or /wishlists ?")
@@ -327,7 +327,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
         self.assertEqual(data['message'],
-                         "Item with id '55000' was not found. " 
+                         "Item with id '55000' was not found. "
                          "You have requested this URI [/wishlists/1/items/55000] "
                          "but did you mean /wishlists/<int:wishlist_id>/items "
                          "or /wishlists/500 "
@@ -451,7 +451,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_items_from_wishlist(self):
-        """ Get a list of Addresses """
+        """ Get a list of Items from a wishlist """
         test_wishlist = self._create_wishlists(1)[0]
         # # create item 1
         new_item_1 = ItemFactory()
@@ -493,7 +493,7 @@ class TestWishlistService(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
         self.assertEqual(data['message'],
-                         "Wishlist '0' was not found. " 
+                         "Wishlist '0' was not found. "
                          "You have requested this URI [/wishlists/0/items] "
                          "but did you mean /wishlists/<int:wishlist_id>/items "
                          "or /wishlists/<int:wishlist_id> "
@@ -580,8 +580,8 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         app_type = "application/json"
         self.assertEqual(data["message"],
-                        "Content-Type must be {}"
-                        .format(app_type))
+                         "Content-Type must be {}"
+                         .format(app_type))
 
     def test_enable_existing_wishlist(self):
         """ Enable an existing Wishlist """
@@ -621,9 +621,9 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data['message'],
                          "Wishlist '{}' was not found. "
-                         .format(test_wishlist.id)+
+                         .format(test_wishlist.id) +
                          "You have requested this URI [/wishlists/{}/enabled] "
-                         .format(test_wishlist.id)+
+                         .format(test_wishlist.id) +
                          "but did you mean /wishlists/<int:wishlist_id>/enabled"
                          " or /wishlists/<int:wishlist_id>/disabled "
                          "or /wishlists/<int:wishlist_id> ?")
@@ -655,9 +655,9 @@ class TestWishlistService(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data['message'],
                          "Wishlist '{}' was not found. "
-                         .format(test_wishlist.id)+
+                         .format(test_wishlist.id) +
                          "You have requested this URI [/wishlists/{}/disabled] "
-                         .format(test_wishlist.id)+
+                         .format(test_wishlist.id) +
                          "but did you mean /wishlists/<int:wishlist_id>/disabled"
                          " or /wishlists/<int:wishlist_id>/enabled "
                          "or /wishlists/<int:wishlist_id>/items ?")
@@ -700,6 +700,7 @@ class TestWishlistService(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)
+
 
 ######################################################################
 #   M A I N
