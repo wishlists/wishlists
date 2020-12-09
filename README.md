@@ -7,8 +7,9 @@ The wishlists resource allows customers to create a collection of products that 
 
 ## LIVE URL
 This service is currently deployed live on IBM cloud. Check it out!
- 
-https://nyu-wishlist-service-f20.us-south.cf.appdomain.cloud 
+
+- App:  https://nyu-wishlist-service-f20.us-south.cf.appdomain.cloud 
+- Swagger docs: https://nyu-wishlist-service-f20.us-south.cf.appdomain.cloud/apidocs/index.html
 
 ## Prerequisite Installation using Vagrant VM
 The easiest way to use this lab is with Vagrant and VirtualBox. if you don't have these software, then the first step is to download and install them.
