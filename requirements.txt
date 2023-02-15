@@ -30,4 +30,4 @@ compare==0.2b0
 requests==2.24.0
 
 # Locked sub-dependencies
-Werkzeug==0.16.1
+Werkzeug==2.2.3
